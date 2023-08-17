@@ -371,9 +371,8 @@ INSERT ALL
 
 1. Conditional Insert Statement
 
-
-    - to insert rows into the related tables in one step based on the specified conditions
-    - conditions are specified between the WHEN-THEN keywords
+- to insert rows into the related tables in one step based on the specified conditions
+- conditions are specified between the WHEN-THEN keywords
 
 ```sql
 INSERT ALL
@@ -402,107 +401,203 @@ INSERT ALL
   SELECT * FROM employees;
 ```
 
-    -- Conditional INSERT FIRST Statement
-    -- for the first WHEN clause that evaluates to true, then database executes the corresponding
-    -- INTO clause and skip subsequent WHEN clauses for the given row.
-    INSERT FIRST
-    	WHEN Condition1 THEN
-    		INTO Insert_statement_1;
-    		INTO Insert_statement_2;
-    	WHEN condition2 THEN
-    		INTO Insert_statement_3;
-    		...
-    	ELSE
-    		INTO Insert_statement_n;
-    Subquery;
+1. Conditional INSERT FIRST Statement
 
--- Pivoting Insert
--- for converting non-relational data to a relational format and inserting it
--- into a relational table
+- For the first WHEN clause that evaluates to true, then database executes the corresponding INTO clause and skip subsequent WHEN clauses for the given row.
 
--- UPDATE Statement
-UPDATE table_name SET column1 = value1 [, column2 = value2, ...] [WHERE condition(s)];
+```sql
+INSERT FIRST
+  WHEN Condition1 THEN
+    INTO Insert_statement_1;
+    INTO Insert_statement_2;
+  WHEN condition2 THEN
+    INTO Insert_statement_3;
+    ...
+  ELSE
+    INTO Insert_statement_n;
+Subquery;
+```
 
--- using subquery
+1. Pivoting Insert
+
+- For converting non-relational data to a relational format and inserting it into a relational table
+
+#### UPDATE Statement
+
+`UPDATE table_name SET column1 = value1 [, column2 = value2, ...] [WHERE condition(s)];`
+
+Using subquery
+
+```sql
 UPDATE employees_copy
-SET (salary, commission_pct) = (SELECT max(salary), max(commission_pct) FROM employees)
-WHERE job_id = 'IT_PROG';
+  SET (salary, commission_pct) = (SELECT max(salary), max(commission_pct) FROM employees)
+  WHERE job_id = 'IT_PROG';
 
 UPDATE employees_copy
-SET salary = 100000
-WHERE hire_date = (SELECT MAX(hire_date) FROM employees);
+  SET salary = 100000
+  WHERE hire_date = (SELECT MAX(hire_date) FROM employees);
+```
 
--- DELETE Statement
-DELETE [FROM] table_name [WHERE conditon];
+#### DELETE Statement
 
--- MERGE Statement
--- to INSERT new records, UPDATE or DELETE existing ones depending on the
--- specified conditions at the same time
+`DELETE [FROM] table_name [WHERE condition];`
 
+#### MERGE Statement
+
+To INSERT new records, UPDATE or DELETE existing ones depending on the specified conditions at the same time
+
+```sql
 MERGE INTO target_table target_alias
-USING(source table|view|subquery) source_alias
-ON (join conditon)
-WHEN MATCHED THEN
-UPDATE SET
-column_name1 = value1,
-column_name2 = value2,
-...
-[WHERE <update condition>]
-[DELETE WHERE <delete condition>]
-WHEN NOT MATCHED THEN
-INSERT (columns) VALUES (values)
-[WHERE <insert condition>];
+  USING(source table|view|subquery) source_alias ON (join condition)
+  WHEN MATCHED THEN
+    UPDATE SET
+      column_name1 = value1,
+      column_name2 = value2,
+      ...
+    [WHERE <update condition>]
+    [DELETE WHERE <delete condition>]
+  WHEN NOT MATCHED THEN
+    INSERT (columns) VALUES (values)
+    [WHERE <insert condition>];
+```
 
+```sql
 MERGE INTO employees_copy c
-USING employees e
-ON (c.employee_id = e.employee_id)
-WHEN MATCHED THEN
-UPDATE SET
-c.first_name = e.first_name,
-c.last_name = e.last_name,
-c.department_id = e.department_id,
-c.salary = e.salary
-DELETE WHERE department_id IS NULL
-WHEN NOT MATCHED THEN
-INSERT
-VALUES(e.employee_id, e.first_name, e.last_name, e.email,
-e.phone_number, e.hire_date, e.job_id, e.salary, e.commission_pct,
-e.manager_id, e.department_id);
+  USING employees e ON (c.employee_id = e.employee_id)
+  WHEN MATCHED THEN
+    UPDATE SET
+    c.first_name = e.first_name,
+    c.last_name = e.last_name,
+    c.department_id = e.department_id,
+    c.salary = e.salary
+  DELETE WHERE department_id IS NULL
+  WHEN NOT MATCHED THEN
+    INSERT VALUES(e.employee_id, e.first_name, e.last_name, e.email,
+                  e.phone_number, e.hire_date, e.job_id, e.salary,
+                  e.commission_pct, e.manager_id, e.department_id);
+```
 
--- Transaction Control Language (TCL)
+#### Transaction Control Language (TCL)
 
--- it has to either happen in full or not at all
--- to ensure data integrity, data consistency and data security
--- finishes with any commit, rollback or system failure, or the
--- DDL or DCL statements.
--- after a DDL or DCL statement, the commit will be automatically executed
+1. It has to either happen in full or not at all
+1. To ensure data integrity, data consistency and data security
+1. Finishes with any commit, rollback or system failure, or the DDL or DCL statements.
+1. After a DDL or DCL statement, the commit will be automatically executed
+
 ROLLBACK / COMMIT
 
--- Row Lock in Oracle
--- during the transaction, the modify/delete/update rows are lock untill COMMIT
+- Row Lock in Oracle
+- During the transaction, the modify/delete/update rows are lock until COMMIT
 
--- SAVEPOINT Statement
--- for longer transactions, savepoints are quite useful as they divide longer
--- transcations into smaller parts and mark certain points of a transaction as
--- checkpoints.
+SAVEPOINT Statement
 
--- the SAVEPOINT statement saves the current state of a transaction and we can
--- roll back to that state.
+- For longer transactions, savepoints are quite useful as they divide longer
+- Transactions into smaller parts and mark certain points of a transaction as checkpoints.
+- the SAVEPOINT statement saves the current state of a transaction and we can roll back to that state.
 
-SAVEPOINT name;
-SAVEPINT TO name;
+`SAVEPOINT name;`
+`SAVEPOINT TO name;`
 
--- FOR UPDATE Statement
--- locks all the rows returned by the query
--- the rows that are already locked by another session wil not be able to be locked using
----- the FOR UPDATE statement
--- the NOWAIT keyword tells Oracle not to wait if the rows have already been locked
----- by another user
--- the SKIP LOCKED keyword tells Oracle to skip the locked rows and operate on the available
----- ones
-SELECT \* FROM table_name WHERE column1 = condition1 FOR UPDATE [NOWAIT|WAIT sec|SKIP LOCKED]
+FOR UPDATE Statement
 
--- use the FOR UPDATE clause in a query including joins, which the rows from all the joined
----- tables are locked by default.
+- Locks all the rows returned by the query
+- The rows that are already locked by another session wil not be able to be locked using the FOR UPDATE statement
+- The `NOWAIT` keyword tells Oracle not to wait if the rows have already been locked by another user
+- The` SKIP LOCKED` keyword tells Oracle to skip the locked rows and operate on the available ones
+
+```sql
+SELECT * FROM table_name WHERE column1 = condition1 FOR UPDATE [NOWAIT|WAIT sec|SKIP LOCKED]
+```
+
+- use the `FOR UPDATE` clause in a query including joins, which the rows from all the joined ables are locked by default.
+
 FOR UPDATE OF column(s) [SKIP LOCKED]
--- to indicate which tables will be locked
+
+- To indicate which tables will be locked
+
+### 11. Flashback Operations
+
+---
+
+#### Flashback Operations
+
+1. Data recovery technology that helps us to prevent data loss
+1. Restore a table to a certain time, to a restore point, to a System Change Number (SCN)
+1. While flashing back a table, all the table trigger are disabled. The `ENABLE TRIGGERS` clause will return the triggers to enabled.
+
+`ALTER TABLE table_name ENABLE ROW MOVEMENT;`
+To flashback a table, need to enable row movement.
+
+```sql
+FLASHBACK TABLE [schema_name1.]table_name1 [,[schema_name2.]table_name2,...]
+					TO { { { SCN | TIMESTAMP } expr | RESTORE POINT restore_point }
+					{[ ENABLE | DISABLE } TRIGGERS ] | BEFORE DROP [ RENAME TO new_table_name ]};
+```
+
+```sql
+FLASHBACK TABLE employees_copy TO TIMESTAMP sysdate;
+FLASHBACK TABLE employees_copy TO BEFORE DROP;
+
+CREATE RESTORE POINT rp_test;
+FLASHBACK TABLE employees_copy TO RESTORE POINT rp_test;
+```
+
+#### PURGE Operations
+
+It is irreversible
+
+PURGE operation while DROP table: `DROP TABLE table_name PURGE;`
+PURGE dropped table in the recycle bin: `PURGE TABLE table_name;`
+
+`VERSIONS` clause is used to trace all the changes in a table between two specific times or SCNs
+Flashback a table to a specified System Change Number (SCN) or to a specific time
+
+#### Flashback Query
+
+`SELECT ... FROM table_name AS OF TIMESTAMP timestamp_value | SCN scn_value;`
+
+#### Flashback Versions Query
+
+Retrieves all the data that existed during a time interval in the pase
+
+```sql
+SELECT ... FROM table_name
+	AS OF [TIMSTAMP BETWEEN time | MINVALUE AND time | MAXVALUE] |
+				[SCN BETWEEN scn | MINVALUE AND scn | MAXVALUE];
+```
+
+- `VERSIONS_STARTTIME` returns the time when the change was applied
+- `VERSIONS_STARTSCN` returns the SCN when the change was applied
+- `VERSIONS_ENDTIME` returns the time when the row version expired
+- `VERSION_ENDSCN` returns the SCN when the row version expired
+- `VERSION_XID` returns the ID of a transaction which created the row version
+- `VERSION_OPERATION` returns the operation type performed by the transaction. I -> insert D -> delete u -> update
+
+```sql
+SELECT versions_starttime, versions_endtime, versions_startscn, versions_endscn,
+       versions_operation, versions_xid, employees_copy.*
+  FROM employees_copy VERSIONS BETWEEN scn MINVALUE AND MAXVALUE
+  WHERE employee_id = 100;
+
+SELECT versions_starttime, versions_endtime, versions_startscn, versions_endscn,
+       versions_operation, versions_xid, employees_copy.*
+  FROM employees_copy VERSIONS
+    BETWEEN TIMESTAMP (sysdate - interval '5'  minute) AND sysdate
+  WHERE employee_id = 100;
+```
+
+### 12. Oracle Constraints in SQL
+
+---
+
+### Notes
+
+Order of Execution
+| Order | Clause | Function |
+| ----- | ---------- | ----------------------------- |
+| 1 | FROM | Choose and join tables to get base data |
+| 2 | WHERE | Filters the base data |
+| 3 | GROUP BY | Aggregates the base data |
+| 4 | HAVING | Filters the aggregated data |
+| 5 | SELECT | Returns the final data |
+| 6 | ORDER BY | Sorts the final data |

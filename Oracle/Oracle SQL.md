@@ -586,9 +586,588 @@ SELECT versions_starttime, versions_endtime, versions_startscn, versions_endscn,
   WHERE employee_id = 100;
 ```
 
-### 12. Oracle Constraints in SQL
+#### 12. Oracle Constraints in SQL
 
 ---
+
+```sql
+CREATE TABLE table_name
+(
+    -- Column-level Constraint
+    column_1 type [CONSTRAINT constraint_name] CONSTRAINT_TYPE,
+    column_2 type,
+    ...
+    -- Table-level Constraint
+    [CONSTRAINT constraint_name] CONSTRAINT_TYPE (column_1, ... )
+)
+```
+
+#### `NOT NULL` Constraint
+
+- Prevent the insertion of NULL value
+- NOT NULL constraints can only be created at the column-level
+
+#### `UNIQUE` Constraint
+
+- UNIQUE column or a set of columns where the combination must be unique can have multiple null values
+- Composite unique constraint can contain a maximum of 32 columns, and only be created at the table-level
+
+```sql
+CREATE TABLE managers
+(   manager_id    NUMBER NOT NULL UNIQUE,
+    first_name    VARCHAR2(50),
+    last_name     VARCHAR2(50) CONSTRAINT lname_not_null
+                    NOT NULL CONSTRAINT ln_uk UNIQUE,
+    department_id NUMBER NOT NULL
+    CONSTRAINT composite_uk UNIQUE(employee_id, first_name, last_name)
+);
+```
+
+#### `PRIMARY KEY` Constraint
+
+- Simple Primary Key(single-column) and Composite Primary Key(multiple columns)
+- Composite primary key can only be created at the table-level
+
+```sql
+CREATE TABLE executives
+(   executive_id NUMBER,
+    first_name   VARCHAR2(50),
+    last_name    VARCHAR2(50),
+    CONSTRAINT exec_eid_pk PRIMARY KEY (executive_id, last_name)
+);
+```
+
+#### `FOREIGN KEY` Constraint
+
+- Foreign key is column or combination of columns used to enforce a relationship between a parent table and a child table
+- The relationship is established between the parent table's primary/unique key and a column or set of columns in the child table
+- Delete child record first, then able to delete parent record
+
+```sql
+CREATE TABLE managers
+(
+   manager_id NUMBER CONSTRAINT mgr_mid_uq UNIQUE,
+   first_name VARCHAR2(50),
+   last_name VARCHAR2(50),
+   department_id NUMBER NOT NULL,
+   phone_number VARCHAR2(11) UNIQUE NOT NULL,
+   email VARCHAR2(100),
+   UNIQUE (email),
+
+   CONSTRAINT mgr_emp_fk FOREIGN KEY (manager_id)
+     REFERENCES employees_copy (employee_id),
+   CONSTRAINT mgr_names_fk FOREIGN KEY (first_name, last_name)
+     REFERENCES employees_copy(first_name, last_name));
+
+-- combination foreign key must unique combination in the parent table
+CREATE TABLE employees_copy
+(
+   employee_id NUMBER(6) CONSTRAINT emp_cpy_eid_pk PRIMARY KEY,
+   first_name VARCHAR(20),
+   last_name VARCHAR(20),
+   department_id NUMBER(4),
+
+   CONSTRAINT emp_cpy_names_uk UNIQUE (first_name, last_name)
+);
+```
+
+#### The `ON DELETE CASCADE | ON DELETE SET NULL` Clause
+
+- The `ON DELETE CASCADE` clause deletes dependent rows in the child table
+  when a related row in the parent table is deleted.
+
+- The `ON DELETE SET NULL` clause updates dependent rows in the child table
+  to NULL when a related row in the parent table is deleted.
+
+```sql
+CREATE TABLE managers
+(
+    manager_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    department_id NUMBER NOT NULL,
+    phone_number VARCHAR2(11) UNIQUE NOT NULL,
+    email VARCHAR2(100),
+    UNIQUE (email),
+
+    CONSTRAINT mgr_emp_fk FOREIGN KEY (manager_id)
+      REFERENCES employees_copy (employee_id)
+      ON DELETE SET NULL | ON DELETE CASCADE
+);
+```
+
+#### `CHECK` Constraint
+
+- Ensures a column or a group of columns meets a specific condition
+- Cannot create check constraints referencing another table
+
+```sql
+CREATE TABLE managers
+(
+    manager_id NUMBER,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    salary NUMBER,
+
+    CONSTRAINT salary_check CHECK (salary > 100 and salary < 50000)
+);
+```
+
+#### Adding Constraints via ALTER TABLE Statements
+
+`ALTER TABLE table_name ADD [CONSTRAINT constraint_name] CONSTRAINT_TYPE
+(column_name, ...);`
+
+`ALTER TABLE employees MODIFY salary CONSTRAINT emp_salary_nn NOT NULL;`
+
+1. To add a NOT NULL CONSTRAINT, we use the ALTER TABLE MODIFY COLUMN clause
+1. The table must be empty or all the values of the NOT NULL column must
+   have a value.
+
+`ALTER TABLE table_name ADD UNIQUE(column_name);`
+
+#### Dropping (Removing) Constraints
+
+`ALTER TABLE table_name DROP CONSTRAINT constraint_name;`
+
+- Use the ALTER TABLE statement to remove a constraint
+- While dropping a PRIMARY KEY constraint, we can use the CASCADE option to drop all the associated FOREIGN KEY constraints.
+
+```sql
+ALTER TABLE table_name DROP CONSTRAINT constraint_name CASCADE;
+ALTER TABLE table_name DROP PRIMARY KEY CASCADE;
+```
+
+#### Use the ONLINE keyword to allow DML operations while dropping constraints
+
+`ALTER TABLE employees_copy DROP CONSTRAINT SYS_C008689 ONLINE;`
+
+#### Cascading Constraints in Oracle
+
+- Use the CASCADE CONSTRAINTS clause while dropping a column, all the constraints
+- Referring to that column's PRIMARY and UNIQUE keys are dropped.
+
+`ALTER TABLE table_name DROP COLUMN column_name CASCADE CONSTRAINTS;`
+
+#### Renaming Constraints
+
+`ALTER TABLE table_name RENAME CONSTRAINT old_name TO new_name;`
+
+#### Disabling/Enabling Constraints
+
+```sql
+ALTER TABLE table_name DISABLE CONSTRAINT constraint_name;
+ALTER TABLE table_name ENABLE CONSTRAINT constraint_name;
+```
+
+- To enable a constraint, all the data in the column or table must satisfy the constraint rules.
+
+#### Status of Constraints
+
+- `ENABLE VALIDATE` -- validate ALL rows
+- `DISABLE VALIDATE` -- no DML operations are allowed -> read only
+  <br>
+- `ENABLE NOVALIDATE` -- only validate further inserts/updates
+- `DISABLE NOVALIDATE` -- no validate ALL rows
+
+`ALTER TABLE departments_copy ENABLE NOVALIDATE CONSTRAINT dept_cpy_id_pk;`
+
+#### Deferring Constraint
+
+Constraints only can set deferrable or not deferrable while creating DEFERRABLE
+
+- Checking at the end of each query `INITIALLY IMMEDIATE(DEFAULT)`
+
+- Postpones constraint enforcement until the end of transaction `INITIALLY DEFERRED`
+
+- The NOT DEFERRABLE constraints will not change to DEFERRED `NOT DEFERRABLE (DEFAULT)`
+
+```sql
+ALTER TABLE table_name ADD CONSTRAINT
+  constraint_name PRIMARY KEY (column_name) DEFERRABLE INITIALLY DEFERRED;
+```
+
+### 13. Database Views
+
+---
+
+```sql
+CREATE [OR REPLACE] [FORCE | NOFORCE] VIEW view_name
+  [(alias[, alias]...)] AS subquery
+  [WITH CHECK OPTION [CONSTRAINT constraint_name]]
+  [WITH READ ONLY [CONSTRAINT constraint_name]];
+```
+
+`REPLACE` -- Modifies the view without the need to re-grant its privileges
+`FORCE `-- Create the view even if the base table does not exist
+`NOFORCE` -- Create the view only if the base table exists (Default)
+`WITH CHECK OPTION` -- Prevents any kind of DML operations that the view cannot select
+`WITH READ ONLY` -- Prevents any DML operation on the view
+
+```sql
+CREATE VIEW empvw40 (e_id, name, surname, email) AS
+  SELECT employee_id, first_name, last_name, email
+    FROM employees WHERE department_id = 40;
+
+SELECT * FROM empvw40;
+```
+
+#### Using the WITH CHECK OPTION Clause
+
+- To ensure that the user can only perform any DML operations that the view selected
+- It will check DML whether performed violating the WHERE clause
+
+```sql
+CREATE OR REPLACE VIEW empvw80 AS
+  SELECT employee_id, first_name, last_name, email,
+         hire_date, job_id, department_id
+    FROM employees_copy
+    WHERE department_id = 80 AND job_id = 'SA_MAN'
+    WITH CHECK OPTION;
+
+UPDATE empvw80 SET first_name = 'Steve' WHERE employee_id = 217; -- Good
+UPDATE empvw80 SET department_id = 70 WHERE employee_id = 217; -- violated WHERE Clause
+```
+
+#### Using WITH READ ONLY Clause
+
+can only use either WITH CHECK OPTION Clause OR WITH READ ONLY Clause
+
+#### Dropping View
+
+`DROP VIEW view_name;`
+
+Dropping a view means deleting its definition from the database
+
+### 14. Data Dictionary Views
+
+---
+
+1. A data dictionary is a set of read-only tables that provides administrative
+   metadata about the database and database objects.
+
+1. Data dictionary views are a collection of tables and views that contain
+   information about the database.
+
+#### Dictionary View
+
+- The complete list of all data dictionary views in the view named `DICTIONARY` all data dictionary view names are written in uppercase
+
+`SELECT * FROM dictionary WHERE table_name = 'USER_TABLES';`
+
+`SELECT * FROM dictionary WHERE UPPER(COMMENTS) LIKE '%SECURITY%';`
+
+#### USER, DBA, ALL, V$ Prefixes
+
+`USER` Prefix -- includes all the objects in the user's schema
+`ALL` Prefix -- includes all the objects in user's schema and the objects that the user can access in all schemas
+`DBA` Prefix -- includes all the objects of all users
+`v$` Prefix -- includes views that have information about database performance
+
+#### USER/DBA/ALL_OBJECTS View
+
+To see all the objects that we own
+
+#### USER/DBA/ALL_TABLES View
+
+To see all the tables that we own
+
+#### USER_TAB_COLUMNS View
+
+To see all the columns of all tables and views that we won
+
+#### USER_CONSTRAINTS Data Dictionary View
+
+CONSTRAINT_TYPE
+
+- C -> Check Constraint
+- P -> Primary Key
+- U -> Unique Key
+- R -> Referential Integrity (Foreign Key)
+- V -> With Check Option (Used For Views)
+- O -> With Read-Only (Used For Views)
+
+#### USER_TAB_COMMENTS / USER_COL_COMMENTS
+
+![Alt text](../src/DataDicView.png 'DataDictionaryView')
+
+### 15. Oracle Sequences
+
+---
+
+- A sequence is a user-created object that automatically generates unique integer numbers
+- It is generally used for populating `primary key` column values
+- A sequence is a shareable object that can be shared by multiple users
+- Sequence numbers are stored independent of tables so a sequence can be used by multiple users and for multiple tables
+- Sequence numbers cannot be rolled back
+- Sequence can be used anywhere to generate unique numbers
+
+#### Creating Sequences
+
+```sql
+CREATE SEQUENCE [schema_name.]sequence_name
+  [ { START WITH start_num }
+  | { INCREMENT BY increment_num }
+  | { MAXVALUE max_num | NOMAXVALUE }
+  | { MINVALUE min_num | NOMINVALUE }
+  | { CYCLE | NOCYCLE }
+  | { CACHE cache_num | NOCACHE }
+  | { ORDER | NOORDER }];
+
+CREATE SEQUENCE employee_seq
+  START WITH 100
+  INCREMENT BY 3
+  MAXVALUE 999
+  CACHE 30
+  NOCYCLE;
+```
+
+#### Modifying Sequences
+
+- Be modified using the `ALTER SEQUENCE` statement
+- Only future sequence numbers are affected
+- Cannot use the `START WITH` option while modifying a sequence
+- While modifying sequences, some validations are performed
+- (e.g. MAXVALUE cannot be smaller than the CURRENT value)
+
+```sql
+ALTER SEQUENCE employee_seq
+  INCREMENT BY 4
+  NOCYCLE;
+```
+
+#### Dropping Sequences
+
+`DROP SEQUENCE sequence_name;`
+
+#### Using Sequences
+
+`NEXTVAL` -- returns the next value of the sequence
+`CURRVAL` -- returns the current sequence value
+
+Can be used
+
+- In the SELECT list of a query
+- In the SELECT list of a subquery in an INSERT statement
+- In the VALUES part of an INSERT statement
+- In the SET clause of an UPDATE statement
+  Can not be used
+- With the DISTINCT keyword
+- In the GROUP BY clause
+- In the HAVING clause
+- In the ORDER BY clause
+
+```sql
+INSERT INTO employees (employee_id, last_name, email, hire_date, job_id)
+  VALUES (employee_seq.NEXTVAL, 'Smith','SMITH5',sysdate,'IT_PROG');
+```
+
+#### Using Sequences as Default Values
+
+```sql
+CREATE TABLE temp
+(
+  e_id INTEGER DEFAULT employee_seq.NEXTVAL,
+  first_name VARCHAR2(50)
+);
+```
+
+#### Sequence Caching
+
+- Cache size can be defined when the sequence is initially created or altered (Default: 20)
+- The specified number of sequence values is cached into memory on the first call
+- Sequence values are retrieved from the cache on request
+- After the last cached sequence value in memory is used, the next set of sequence
+  values is cached
+
+#### USER_SEQUENCES View
+
+`IDENTITY` Column
+
+- Restrictions
+  - A table can have only one identity column
+  - Identity columns must be `numeric data types`
+  - Identity column is not inherited when using a CTS statement
+  - Identity column cannot have another DEFAULT value
+  - Identity columns implicitly have `NOT NULL` and `NOT DEFERRABLE` constraints
+  - USER_TAB_IDENTITY_COLS to query all the identity columns
+  - the SYS.IDENSEQ$ view stores the link between the table and
+
+```sql
+GENERATED [ ALWAYS | BY DEFAULT [ ON NULL ]] AS IDENTITY [(identity options)]
+[   { START WITH start_num }
+  | { INCREMENT BY increment_num }
+  | { MAXVALUE max_num | NOMAXVALUE }
+  | { MINVALUE min_num | NOMINVALUE }
+  | { CYCLE | NOCYCLE }
+  | { CACHE cache_num | NOCACHE }
+  | { ORDER | NOORDER }
+]
+```
+
+- `GENERATED ALWAYS`: always generates a value on each insert (default option)
+- `GENERATED BY DEFAULT`: generates a value only if no value is provided
+- `GENERATED BY DEFAULT ON NULL`: generates a value if a NULL value or nothing is specified
+- Identity options has the same set of properties as a sequence
+
+#### The DROP IDENTITY clause removes the identity property but keeps the column
+
+`ALTER TABLE table_name MODIFY column_name DROP IDENTITY;`
+
+#### START WITH LIMIT VALUE sets the existing maximum/minimum value + INCREMENT
+
+BY value as the START WITH value
+
+```sql
+CREATE TABLE temp
+(
+  ID NUMBER
+    GENERATED BY DEFAULT ON NULL AS IDENTITY
+      START WITH 50 INCREMENT BY 3,
+  txt VARCHAR2(100)
+);
+```
+
+### 16. Oracle Synonyms
+
+---
+
+- A synonym is a database object created to give an alternative's name to another database object.
+- Useful for hiding the identity and location of the related object
+- There can only be one index on the same set of columns
+- NULL column values are not indexed in B-tree indexes
+
+#### Creating, Using and Dropping Synonyms
+
+```sql
+CREATE [OR REPLACE] [PUBLIC] SYNONYM [schema_name.]synonym_name
+  FOR [schema_name.]object_name[@db_link];
+```
+
+- Synonyms created without the PUBLIC option are considered private synonyms
+- Private synonyms have higher precedence than public synonyms
+
+```sql
+DROP [PUBLIC] SYNONYM [schema_name.]synonym_name
+```
+
+```sql
+CREATE SYNONYM test_syn FOR employees;
+CREATE OR REPLACE SYNONYM test_syn FOR departments;
+
+DROP SYNONYM test_syn;
+```
+
+#### Analyzing the USER_SYNONYMS View
+
+To get the properties of the synonyms the user owns
+<br/><br/>
+
+### 17.Oracle Indexes in SQL
+
+---
+
+-- indexes are schema objects for speeding up the retrieval of rows by
+-- using their ROWIDs.
+-- a ROWID is the physical location of a row
+-- indexes store ROWIDs of each row to get these rows faster
+-- only can create indexes while creating the table only for the
+-- primary key or foreign key or UNIQUE Constraint
+
+CREATE [UNIQUE | BITMAP] INDEX index_name ON table_name ( column_name1,
+[,column_name2]...);
+CREATE INDEX temp_idx ON employees_copy (employee_id);
+-- the default index type is Non-Unique B-tree Index
+
+CREATE UNIQUE INDEX temp_idx ON employees_copy (employee_id);
+-- unique indexes prevent duplicate value entry
+
+-- by using the ALTER TABLE statement
+CREATE INDEX emp_id_idx ON emp(employee_id)
+ALTER TABLE emp ADD PRIMARY KEY(employee_id) USING INDEX emp_id_idx;
+
+ALTER INDEX current_index_name RENMAE TO new_index_name;
+
+CREATE TABLE sales (
+sale_id NUMBER PRIMARY KEY USING INDEX
+(CREATE INDEX sales_sale_id_idx ON sales(sale_id)),
+sale_date DATE NOT NULL,
+customer_id NUMBER NOT NULL,
+transaction_id NUMBER UNIQUE USING INDEX
+(CREATE INDEX sale_tran_id_idx ON sales(transaction_id)),
+sale_detail_text VARCHAR2(4000));
+
+-- Remove (Drop) Indexes
+DROP INDEX index_name [ONLINE];
+-- indexes cannot be modified
+
+-- Function-Based Indexes
+CREATE [UNIQUE | BITMAP] INDEX index_name ON table_name ( function_name(column_name1, [,column_name2]...));
+
+-- Multiple Indexes on the Same Columns & Invisible Indexes
+-- can be created on the same set of columns if the indexes are of
+-- different types
+-- if there are multiple indexes on the same set of columns, only one
+-- index can be visible at a time
+
+/_+ hint _/ -- to force the optimizer to take some specific actions
+
+CREATE INDEX emp_cpy_dpt_id_idx
+ON employees_copy (department_id);
+CREATE BITMAP INDEX emp_cpy_dpt_id_idx2
+ON employees_copy (department_id) INVISIBLE;
+
+SELECT /_+ USE_INVISIBLE_INDEXES INDEX (employees_copy emp_cpy_dpt_id_idx2) _/\*
+FROM employees_copy WHERE department_id = 20;
+
+ALTER INDEX emp_cpy_dpt_id_idx INVISIBLE;
+
+ALTER SESSION SET optimizer_use_invisible_indexes = TRUE;
+
+-- Analyzing the UESER*INDEXES and USER_IND_COLUMNS Views
+SELECT * FROM user*indexes;
+SELECT * FROM user_ind_columns;
+
+-- Altering Indexes
+
+-- Unusable indexes will be ignored by the server on index usage and
+-- maintenance
+ALTER INDEX index_name UNUSABLE;
+
+-- Unsable indexes need to rebuild
+ALTER INDEX index_name REBUILD [ONLINE];
+
+-- Function-based indexes can be enabled or disable if they are valid
+ALTER INDEX index_name DISABLE | ENABLE;
+
+-- Compiling an invalid index will make it valid again
+ALTER INDEX index_name COMPILE;
+
+### 18. Managing Oracle Privileges and Roles
+
+---
+
+-- Creating a Database User
+-- USER
+-- a user is an account that you use to connect to a database and perform
+-- some operations
+-- Schema
+-- a schema is a set of objects belonging to that user
+
+CREATE USER user_name IDENTIFIED BY password;
+
+CREATE USER user_name
+[IDENTIFIED BY password | NO AUTHENTICATION]
+[PASSWORD EXPIRE]
+[ACCOUNT {LOCK | UNLOCK}]
+[CONTAINTER = {CURRENT | ALL}];
+
+DROP USER user_name;
+
+ALTER USER user_name IDENTIFIED BY password;
+
+SELECT _ FROM dba_sys_privs;
+SELECT _ FROM user_role_privs;
 
 ### Notes
 

@@ -1,3 +1,5 @@
+## <br/>
+
 ### 7. Using Subqueries
 
 ---
@@ -137,6 +139,8 @@ SELECT * FROM departments d
                         (SELECT department_id FROM employees);
 ```
 
+## <br/>
+
 ### 8. Set Operators
 
 ---
@@ -175,6 +179,8 @@ UNION ALL
 SELECT job_id, department_id, NULL, NULL
   FROM job_history;
 ```
+
+## <br/>
 
 ### 9. Data Definition Language (DDL)
 
@@ -321,6 +327,8 @@ Rename table
 RENAME old_name TO new_name;
 ALTER TABLE old_name RENAME TO new_name;
 ```
+
+## <br/>
 
 ### 10. Data Manipulation Language (DML)
 
@@ -515,6 +523,8 @@ FOR UPDATE OF column(s) [SKIP LOCKED]
 
 - To indicate which tables will be locked
 
+## <br/>
+
 ### 11. Flashback Operations
 
 ---
@@ -585,6 +595,8 @@ SELECT versions_starttime, versions_endtime, versions_startscn, versions_endscn,
     BETWEEN TIMESTAMP (sysdate - interval '5'  minute) AND sysdate
   WHERE employee_id = 100;
 ```
+
+## <br/>
 
 #### 12. Oracle Constraints in SQL
 
@@ -787,6 +799,8 @@ ALTER TABLE table_name ADD CONSTRAINT
   constraint_name PRIMARY KEY (column_name) DEFERRABLE INITIALLY DEFERRED;
 ```
 
+## <br/>
+
 ### 13. Database Views
 
 ---
@@ -839,6 +853,8 @@ can only use either WITH CHECK OPTION Clause OR WITH READ ONLY Clause
 
 Dropping a view means deleting its definition from the database
 
+## <br/>
+
 ### 14. Data Dictionary Views
 
 ---
@@ -890,6 +906,8 @@ CONSTRAINT_TYPE
 #### USER_TAB_COMMENTS / USER_COL_COMMENTS
 
 ![Alt text](../src/DataDicView.png 'DataDictionaryView')
+
+## <br/>
 
 ### 15. Oracle Sequences
 
@@ -1028,6 +1046,8 @@ CREATE TABLE temp
 );
 ```
 
+## <br/>
+
 ### 16. Oracle Synonyms
 
 ---
@@ -1061,113 +1081,129 @@ DROP SYNONYM test_syn;
 #### Analyzing the USER_SYNONYMS View
 
 To get the properties of the synonyms the user owns
-<br/><br/>
+
+## <br/>
 
 ### 17.Oracle Indexes in SQL
 
 ---
 
--- indexes are schema objects for speeding up the retrieval of rows by
--- using their ROWIDs.
--- a ROWID is the physical location of a row
--- indexes store ROWIDs of each row to get these rows faster
--- only can create indexes while creating the table only for the
--- primary key or foreign key or UNIQUE Constraint
+1. Indexes are schema objects for speeding up the retrieval of rows by using their ROWIDs.
+1. A ROWID is the physical location of a row
+1. Indexes store ROWIDs of each row to get these rows faster
+1. Only can create indexes while creating the table only for the primary key or foreign key or UNIQUE Constraint
 
+```sql
 CREATE [UNIQUE | BITMAP] INDEX index_name ON table_name ( column_name1,
 [,column_name2]...);
+```
+
+#### The default index type is `Non-Unique B-tree Index`
+
+```sql
 CREATE INDEX temp_idx ON employees_copy (employee_id);
--- the default index type is Non-Unique B-tree Index
+```
 
+#### Unique indexes prevent duplicate value entry
+
+```sql
 CREATE UNIQUE INDEX temp_idx ON employees_copy (employee_id);
--- unique indexes prevent duplicate value entry
+```
 
--- by using the ALTER TABLE statement
+#### By using the ALTER TABLE statement
+
+```sql
 CREATE INDEX emp_id_idx ON emp(employee_id)
 ALTER TABLE emp ADD PRIMARY KEY(employee_id) USING INDEX emp_id_idx;
+```
 
-ALTER INDEX current_index_name RENMAE TO new_index_name;
+`ALTER INDEX current_index_name RENMAE TO new_index_name;`
 
+```sql
 CREATE TABLE sales (
-sale_id NUMBER PRIMARY KEY USING INDEX
-(CREATE INDEX sales_sale_id_idx ON sales(sale_id)),
-sale_date DATE NOT NULL,
-customer_id NUMBER NOT NULL,
-transaction_id NUMBER UNIQUE USING INDEX
-(CREATE INDEX sale_tran_id_idx ON sales(transaction_id)),
-sale_detail_text VARCHAR2(4000));
+  sale_id NUMBER PRIMARY KEY USING INDEX
+    (CREATE INDEX sales_sale_id_idx ON sales(sale_id)),
+  sale_date DATE NOT NULL,
+  customer_id NUMBER NOT NULL,
+  transaction_id NUMBER UNIQUE USING INDEX
+    (CREATE INDEX sale_tran_id_idx ON sales(transaction_id)),
+  sale_detail_text VARCHAR2(4000));
+```
 
--- Remove (Drop) Indexes
-DROP INDEX index_name [ONLINE];
--- indexes cannot be modified
+#### Remove (Drop) Indexes
 
--- Function-Based Indexes
-CREATE [UNIQUE | BITMAP] INDEX index_name ON table_name ( function_name(column_name1, [,column_name2]...));
+`DROP INDEX index_name [ONLINE];` -- indexes cannot be modified
 
--- Multiple Indexes on the Same Columns & Invisible Indexes
--- can be created on the same set of columns if the indexes are of
--- different types
--- if there are multiple indexes on the same set of columns, only one
--- index can be visible at a time
+#### Function-Based Indexes
 
-/_+ hint _/ -- to force the optimizer to take some specific actions
+```sql
+CREATE [UNIQUE | BITMAP]
+  INDEX index_name ON table_name
+    ( function_name(column_name1, [,column_name2]...));
+```
 
-CREATE INDEX emp_cpy_dpt_id_idx
-ON employees_copy (department_id);
-CREATE BITMAP INDEX emp_cpy_dpt_id_idx2
-ON employees_copy (department_id) INVISIBLE;
+1. Multiple Indexes on the Same Columns & Invisible Indexes can be created on the same set of columns if the indexes are of different types
+1. If there are multiple indexes on the same set of columns, only one index can be visible at a time
 
-SELECT /_+ USE_INVISIBLE_INDEXES INDEX (employees_copy emp_cpy_dpt_id_idx2) _/\*
-FROM employees_copy WHERE department_id = 20;
+`/_+ hint _/` -- to force the optimizer to take some specific actions
+
+```sql
+CREATE INDEX emp_cpy_dpt_id_idx ON employees_copy (department_id);
+
+CREATE BITMAP INDEX emp_cpy_dpt_id_idx2 ON employees_copy (department_id) INVISIBLE;
+
+SELECT /_+ USE_INVISIBLE_INDEXES INDEX (employees_copy emp_cpy_dpt_id_idx2) _/ *
+  FROM employees_copy WHERE department_id = 20;
 
 ALTER INDEX emp_cpy_dpt_id_idx INVISIBLE;
 
 ALTER SESSION SET optimizer_use_invisible_indexes = TRUE;
+```
 
--- Analyzing the UESER*INDEXES and USER_IND_COLUMNS Views
+#### Analyzing the UESER\*INDEXES and USER_IND_COLUMNS Views
+
+```sql
 SELECT * FROM user*indexes;
 SELECT * FROM user_ind_columns;
+```
 
--- Altering Indexes
+#### Altering Indexes
 
--- Unusable indexes will be ignored by the server on index usage and
--- maintenance
-ALTER INDEX index_name UNUSABLE;
+- Unusable indexes will be ignored by the server on index usage and maintenance `ALTER INDEX index_name UNUSABLE;`
 
--- Unsable indexes need to rebuild
-ALTER INDEX index_name REBUILD [ONLINE];
+- Unusable indexes need to rebuild `ALTER INDEX index_name REBUILD [ONLINE];`
 
--- Function-based indexes can be enabled or disable if they are valid
-ALTER INDEX index_name DISABLE | ENABLE;
+- Function-based indexes can be enabled or disable if they are valid `ALTER INDEX index_name DISABLE | ENABLE;`
 
--- Compiling an invalid index will make it valid again
-ALTER INDEX index_name COMPILE;
+- Compiling an invalid index will make it valid again `ALTER INDEX index_name COMPILE;`
+
+## <br/>
 
 ### 18. Managing Oracle Privileges and Roles
 
 ---
 
--- Creating a Database User
--- USER
--- a user is an account that you use to connect to a database and perform
--- some operations
--- Schema
--- a schema is a set of objects belonging to that user
+#### Creating a Database User
 
+`USER` -- a user is an account that you use to connect to a database and perform some operations
+`Schema` -- a schema is a set of objects belonging to that user
+
+```sql
 CREATE USER user_name IDENTIFIED BY password;
 
 CREATE USER user_name
-[IDENTIFIED BY password | NO AUTHENTICATION]
-[PASSWORD EXPIRE]
-[ACCOUNT {LOCK | UNLOCK}]
-[CONTAINTER = {CURRENT | ALL}];
+  [IDENTIFIED BY password | NO AUTHENTICATION]
+  [PASSWORD EXPIRE]
+  [ACCOUNT {LOCK | UNLOCK}]
+  [CONTAINTER = {CURRENT | ALL}];
 
 DROP USER user_name;
 
 ALTER USER user_name IDENTIFIED BY password;
 
-SELECT _ FROM dba_sys_privs;
-SELECT _ FROM user_role_privs;
+SELECT * FROM dba_sys_privs;
+SELECT * FROM user_role_privs;
+```
 
 ### Notes
 

@@ -1,5 +1,7 @@
-# Oracle-Database
+# Oracle Database Learning Path
 
-###
+---
 
-Hello, Oracle
+#### 1. MySQL basic knowledge
+
+#### 2. Oracle SQL knowledge

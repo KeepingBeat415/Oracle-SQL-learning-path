@@ -1,4 +1,459 @@
-## <br/>
+### 1. Retrieving Data
+
+---
+
+#### DESCRIBE Command
+
+```sql
+DESCRIBE table_name;
+DESC[RIBE] table_name;
+```
+
+#### INFORMATION Command
+
+```sql
+INFORMATION table_name;
+INFO table_name;
+```
+
+#### Quote(Q) Operate
+
+1. Can use any character as quotation mark delimiter
+2. Such as, [] {} <> \* \* A A
+
+```sql
+SELECT q'[Example Quote]' FROM table_name;
+SELECT first_name || q'[&&]' || last_name FROM student; -- OUTPUT: John && Fisher
+```
+
+#### Concatenation Operator
+
+```sql
+SELECT column_1 || column_2 FROM table_name;
+```
+
+#### Arithmetic Expressions
+
+Arithmetic operations with the NULL values return NULL
+
+#### NULL Operator
+
+'= NULL' is not the same as the 'IS NULL'
+
+#### AND Operator
+
+TRUE AND NULL => NULL
+FALSE AND NULL => FALSE
+NULL AND NULL => NULL
+
+#### OR Operator
+
+TRUE OR NULL => TRUE
+FALSE OR NULL => NULL
+NULL OR NULL => NULL
+
+#### NULLS First and NULLS Last
+
+`ORDER BY column_1 DESC NULLS FIRST, column_2 NULLS LAST`
+
+#### ROWID
+
+A unique identifier that contains the physical address of a row
+
+#### ROWNUM
+
+Consecutive logical sequence number given to the rows fetched from the table
+
+#### FETCH Clause
+
+Used in conjunction with the SELECT and ORDER BY clauses to limit the rows and retrieve a portion of the returning rows
+
+```sql
+[OFFSET rows_to_skip ROW[S]]
+FETCH [FIRST | NEXT] [row_count | percent PERCENT] ROW[S] [ONLY | WITH TIES]
+```
+
+- ONLY is used to return exactly the specified number of rows
+- WITH TIES returns extra rows with the same value as the last row fetched, must specify the order_by_clause.
+
+#### Substitution Variable
+
+Work as placeholders in an SQL script
+
+`&` -- ampersand(&) character is used before the substitution variable in the query substitution variable with string type, '&str'
+
+`&&`
+
+- Work as multiple usage of the substitution variables
+- Prompt once and everywhere that variable is used it will use what was entered
+
+#### DEFINE/DEF and UNDEFINE/UNDEF Commands
+
+```sql
+DEFINE var_name = value;
+UNDEFINE var_name;
+```
+
+#### ACCEPT/PROMPT
+
+Reliable and robust method for getting input, `ACCEPT user_id PROMPT 'Please Enter an ID';`
+
+#### SET VERIFY ON/OFF
+
+Displays the status of the variable before and after the substitution.
+
+<br/>
+
+### 2. Single Row Functions
+
+---
+
+Character Functions, Number Functions, Date Functions, Conversion Functions, General Functions
+
+#### Character Functions
+
+```sql
+initcap('Adam SMITH') # OUTPUT: Adam Smith
+
+substr(source_str, position[, length]) -- starting index 1
+substr('SQL Course', 1, 3) -- OUTPUT: SQL
+
+instr(str, substring[, position, occurrence])
+
+trim([[LEADING|TRAILING|BOTH] trim_character FROM] string)
+trim(LEADING '*' FROM '*** String ***') -- OUTPUT: String ***
+-- only trim same character
+
+ltrim(string, [trim_string])
+ltrim('TEST***TEST', 'TEST') -- OUTPUT: ***TEST
+rtrim('TEST***TEST', 'TEST') -- OUTPUT: TEST***
+ltrim('www.yourwebsite.com', 'w.') -- OUTPUT: yourwebsite.com
+-- trim multiplier 'w' and multiple '.' character
+
+replace(string, string_to_replace[, replacement_string])
+-- if not specify any replacement string, then will remove any exact matched characters
+
+lpad(string, target_length, padding_expression)
+rpad(string, target_length, padding_expression)
+lpad('TEST', 10, '-') -- OUTPUT: ------TEST
+```
+
+#### Numeric Functions
+
+```sql
+round(12.136, 2) -- OUTPUT: 12.14
+round(145.953, -2) -- OUTPUT: 100
+trunc(12.136, 2) -- OUTPUT: 12.13
+```
+
+#### Date Functions
+
+```sql
+add_months(date, n)
+add_months('31-AUG-2023', 1) -- OUTPUT: 30-SEP-2023
+
+extract(month FROM sysdate)
+```
+
+#### Conversion Functions
+
+```sql
+to_char(date|number, [format_model], [nls_parameter])
+to_char(1000, '$99,999.99') -- OUTPUT: $1,000.00
+
+to_number(char [, 'format_model'])
+to_number('$1,000.00', '$99,999.99') -- OUTPUT: 1000
+
+to_date(char [, 'format_model'])
+to_date('Jun 12, 2005', 'Mon DD, YYYY')
+```
+
+#### NVL Functions
+
+`NVL(Expression1, Expression2)`
+
+- To replace a null value with a meaningful alternative
+- Expression 1 and Expression 2 must be same data type
+- If expression 1 is null, then NVL() function returns expression 2 to avoid calculation errors
+
+`NVL2(Expression1, Expression2, Expression3)`
+
+- If Expression 1 is not NULL, then returns Expression 2.
+- If Expression 1 is NULL, then returns Expression 3.
+- Expression 2 and Expression 3 must be same data type
+
+`NULLIF(Expression1, Expression2)`
+
+- If equal, returns NULL. If not equal, returns Expression 1.
+
+#### COALESCE Functions
+
+`coalesce(Expression1, Expression2, ... ,ExpressionN)`
+Returns the first one that evaluates to a non-null value
+
+#### Regular Expressions
+
+- The starting character must be an alphabet: `^[A-Za-z]`.
+- Must contain only alphabets, numbers and periods: `[A-Za-z0-9.]`.
+- Must be prefixed with an “at the rate of” (@) symbol and may contain only alphabets, numbers, hyphens and periods: `@[A-Za-z0-9.-]`.
+- Must be prefixed with a DOT followed by alphabets not less than 2 and no more than 4 :`\.[A-Za-z]{2,4}$`.
+- `\`: used as escape.
+- `*`: can be any number of occurrences
+
+```sql
+REGEXP_LIKE (EMAIL, '^[A-Za-z]+[A-Za-z0-9.]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$')
+```
+
+#### MOD Function
+
+```sql
+MOD(3, 2) -- OUTPUT: 1
+```
+
+<br/>
+
+### 3. Conditional Expression
+
+---
+
+#### Conditional Expression
+
+```sql
+case ... when Expression
+
+case expression when comparsion_1 then result_1
+							 [when comparsion_2 then result_2
+								...
+								when comparsion_n then result_n
+								else result]
+end
+```
+
+```sql
+SELECT first_name, last_name, job_id, salary,
+    CASE job_id
+       WHEN 'ST_CLERK' THEN salary * 1.2
+       WHEN 'SA_REP'   THEN salary * 1.3
+       WHEN 'IT_PROG'  THEN salary * 1.4
+       ELSE salary
+    END "UPDATED SALARY"
+FROM employees;
+
+SELECT first_name, last_name, job_id, salary,
+    CASE
+       WHEN job_id = 'AD_PRES'  THEN salary*1.2
+       WHEN job_id = 'SA_REP'   THEN salary*1.3
+       WHEN job_id = 'IT_PROG'  THEN salary*1.4
+       WHEN last_name = 'King'  THEN 2*salary
+       ELSE salary
+    END "UPDATED SALARY"
+FROM employees;
+
+SELECT first_name, last_name, job_id, salary
+FROM employees
+WHERE (CASE
+          WHEN job_id = 'IT_PROG' AND salary > 5000 THEN 1
+          WHEN job_id = 'SA_MAN' AND salary > 10000 THEN 1
+          ELSE 0
+       END) = 1;
+```
+
+---
+
+#### decode Function
+
+To provide if-then-else logic in SQL, only in Oracle
+
+`decode (col | expression, search1, result1 [,search2, result2] ... [,default])`
+
+```sql
+SELECT first_name, last_name, job_id, salary,
+	     decode(job_id, 'ST_CLERK', salary * 1.2
+                        'SA_REP'  , salary * 1.3
+                        'IT_PROG' , salary * 1.4
+                        salary) as "UPDATED SALARY"
+FROM employees;
+```
+
+<br/>
+
+### 4. Group Functions
+
+---
+
+#### Group Function
+
+Operate on multiple rows and return one result for each group ignore the NULL values
+
+```sql
+avg([DISTINCT | ALL] expression)
+
+count([DISTINCT | ALL] expression)
+
+sum([DISTINCT | ALL] expression) -- with numerical data
+```
+
+#### listagg Functions
+
+- Aggregate strings from data in columns in a database table
+- Concatenates values from separate rows into a single value or by a specified delimiter
+
+```sql
+LISTAGG(column_name [,delimiter]) WITHIN GROUP (ORDER BY sort_expression)
+
+SELECT listagg(first_name,',') WITHIN GROUP (ORDER BY first_name) AS Employees
+  FROM employees
+  WHERE job_id = 'ST_CLERK';
+
+SELECT listagg(first_name,',') AS Employees
+  FROM employees
+  WHERE job_id = 'ST_CLERK';
+```
+
+#### Group By Clause
+
+- Column aliases cannot be used with the GROUP BY clause
+- SELECT clause cannot have any different columns than what is used in the GROUP BY clause
+
+```sql
+SELECT expression1, expression2, ... , expression_n, aggregate_function
+       (aggregate_expression)
+  FROM table_name
+  [WHERE condition]
+  GROUP BY expression1, experssion2, ... , expression_n
+  [HAVING group_condition]
+  [ORDER BY order_expression]
+```
+
+```sql
+SELECT job_id, department_id, avg(salary)
+  FROM employees
+  GROUP BY job_id, department_id;
+```
+
+Multiple columns Group By, then Combination Column's Values
+
+#### Having Clause
+
+- The group functions cannot be used in the WHERE clause
+- The WHERE clause filters rows whereas the **HAVING clause filters grouped data**
+
+#### Nested Group Functions
+
+- Can be nested to a depth of two have to using GROUP BY
+- Cannot write an individual column name in the select statement
+- Cannot use WHERE Clause and HAVING Clause
+- GroupFunction1(GroupFunction2())
+
+<br/>
+
+### 5. Joining Multiple Tables
+
+---
+
+#### Natural Join
+
+`SELECT column_1 FROM table_1 NATURAL JOIN table_2;`
+
+- Based on common columns that have the **same name** and **same data type**
+- same name with different type of data, it will result in an error
+
+#### Join
+
+`SELECT column_1 FROM table_1 JOIN table_2 USING (column_2);`
+
+- With the USING Clause
+- Use the USING clause to specify which column to be selected
+- Cannot give aliases to columns that we used in the USING Clause
+
+#### Inner Join
+
+```sql
+SELECT column_1 FROM table_1 [INNER]
+  JOIN table_2 ON (join_condition) / USING(column_name)
+```
+
+Returns all of rows which satisfy the join condition
+
+#### Self Join
+
+Joining a table with itself
+
+#### Joining Non-Equijoins
+
+- If two tables do not match with columns, we can join
+- These tables using the BETWEEN operator, or the comparison operators (<, >, <=, >=, <>)
+
+### Outer Join
+
+`LEFT OUTER JOIN`
+Returns all the matched and the unmatched rows for left table
+
+`RIGHT OUTER JOIN`
+Returns all the matched and the unmatched rows for right table
+
+`FULL OUTER JOIN`
+Returns all the matched and the unmatched rows for both tables
+
+`CROSS JOIN`
+Cartesian Product
+
+<br/>
+
+### 6. Oracle’s Old Style
+
+---
+
+1. The outer join operator(+) cannot use the IN operator
+2. The outer join operator(+) cannot be combined with another condition using the OR operator
+3. A join condition containing the join operator cannot involve a subquery
+
+#### INNER JOIN
+
+```sql
+SELECT column_1, column_2
+  FROM table_1, table_2
+  WHERE table_1_column = table_2_column;
+```
+
+#### OUTER JOIN
+
+- LEFT JOIN
+
+```sql
+SELECT column_1, column_2
+  FROM table_1, table_2
+  WHERE table_1_column = table_2_column(+);
+
+SELECT e.first_name, e.last_name, j.job_title, e.salary, j.min_salary, j.max_salary
+  FROM employees e, jobs j
+  WHERE e.job_id = j.job_id(+)
+    AND e.salary BETWEEN j.min_salary(+)+500 AND j.max_salary(+);
+    -- add (+) to each jobs table condition
+```
+
+- RIGHT JOIN
+
+```sql
+SELECT column_1, column_2
+  FROM table_1, table_2
+  WHERE table_1_column_3(+) = table_2_column_3
+    AND table_1_column_4(+) = table_2_column_4
+```
+
+- FULL JOIN
+
+```sql
+SELECT column_1, column_2
+  FROM table_1, table_2
+  WHERE table_1_column = table_2_column(+)
+UNION
+SELECT column_1, column_2
+  FROM table_1, table_2
+  WHERE table_1_column(+) = table_2_column
+```
+
+<br/>
 
 ### 7. Using Subqueries
 
@@ -139,7 +594,7 @@ SELECT * FROM departments d
                         (SELECT department_id FROM employees);
 ```
 
-## <br/>
+<br/>
 
 ### 8. Set Operators
 
@@ -180,7 +635,7 @@ SELECT job_id, department_id, NULL, NULL
   FROM job_history;
 ```
 
-## <br/>
+<br/>
 
 ### 9. Data Definition Language (DDL)
 
@@ -328,7 +783,7 @@ RENAME old_name TO new_name;
 ALTER TABLE old_name RENAME TO new_name;
 ```
 
-## <br/>
+<br/>
 
 ### 10. Data Manipulation Language (DML)
 
@@ -523,7 +978,7 @@ FOR UPDATE OF column(s) [SKIP LOCKED]
 
 - To indicate which tables will be locked
 
-## <br/>
+<br/>
 
 ### 11. Flashback Operations
 
@@ -596,7 +1051,7 @@ SELECT versions_starttime, versions_endtime, versions_startscn, versions_endscn,
   WHERE employee_id = 100;
 ```
 
-## <br/>
+<br/>
 
 #### 12. Oracle Constraints in SQL
 
@@ -799,7 +1254,7 @@ ALTER TABLE table_name ADD CONSTRAINT
   constraint_name PRIMARY KEY (column_name) DEFERRABLE INITIALLY DEFERRED;
 ```
 
-## <br/>
+<br/>
 
 ### 13. Database Views
 
@@ -853,7 +1308,7 @@ can only use either WITH CHECK OPTION Clause OR WITH READ ONLY Clause
 
 Dropping a view means deleting its definition from the database
 
-## <br/>
+<br/>
 
 ### 14. Data Dictionary Views
 
@@ -907,7 +1362,7 @@ CONSTRAINT_TYPE
 
 ![Alt text](../src/DataDicView.png 'DataDictionaryView')
 
-## <br/>
+<br/>
 
 ### 15. Oracle Sequences
 
@@ -1046,7 +1501,7 @@ CREATE TABLE temp
 );
 ```
 
-## <br/>
+<br/>
 
 ### 16. Oracle Synonyms
 
@@ -1082,7 +1537,7 @@ DROP SYNONYM test_syn;
 
 To get the properties of the synonyms the user owns
 
-## <br/>
+<br/>
 
 ### 17.Oracle Indexes in SQL
 
@@ -1177,7 +1632,7 @@ SELECT * FROM user_ind_columns;
 
 - Compiling an invalid index will make it valid again `ALTER INDEX index_name COMPILE;`
 
-## <br/>
+<br/>
 
 ### 18. Managing Oracle Privileges and Roles
 

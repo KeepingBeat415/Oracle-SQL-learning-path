@@ -32,6 +32,7 @@
     - [GROUP BY Multiple Columns](#group-by-multiple-columns)
     - [GROUP BY With HAVING clause](#group-by-with-having-clause)
     - [GROUP BY WITH ROLLUP](#group-by-with-rollup)
+    - [Subqueries](#subqueries)
   - [Notes](#notes)
     - [Data Type with Decimal](#data-type-with-decimal)
     - [Date Functions](#date-functions)
@@ -79,6 +80,15 @@ CREATE TABLE <talbe_name>(
 	name VARCHAR(50),
 	age INT
 );
+
+CREATE TABLE employees(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	last_name VARCHAR(50) NOT NULL,
+	first_name VARCHAR(50) NOT NULL,
+	middle_name VARCHAR(50),
+	age INT NOT NULL,
+	current_status VARCHAR(50) DEFAULT 'employed'
+);
 ```
 
 #### Show Columns From Table
@@ -111,6 +121,10 @@ INSERT INTO <table_name> (<column_1>, <column_2>)
     VALUES  (<value_1>, <value_1>),
 		    (<value_2>, <value_2>)
 			(<value_3>, <value_3>);
+
+INSERT INTO shirts (article, color, shirt_size, last_worn)
+    VALUES ('t-shirt', 'white', 'S', 10),
+		   ('t-shirt', 'green', 'S', 200);
 ```
 
 - `NOT NULL`, insert NULL into NOT NULL column cause ERROR
@@ -133,12 +147,21 @@ CREATE TABLE unique_cats(
 
 ```sql
 UPDATE <table_name> SET <column_1> = <new_value> WHERE <column_1> = <old_value>;
+
+UPDATE shirts SET shirt_size='L';
+
+UPDATE shirts SET last_worn=0, color='off white'
+    WHERE last_worn=15;
 ```
 
 #### Delete
 
 ```sql
 DELETE FROM <table_name> WHERE <column_1> = <value_1>;
+
+DELETE FROM shirts WHERE article='tank tops';
+
+DELETE FROM shirts;
 ```
 
 #### ALTER TABLE
@@ -284,9 +307,12 @@ SELECT author_lname, AVG(grade) FROM books
     GROUP BY author_lname WITH ROLLUP;
 ```
 
--- Subqueries
+#### Subqueries
+
+```sql
 SELECT title, pages FROM books
-WHERE pages = (SELECT MAX(pages) FROM books);
+    WHERE pages = (SELECT MAX(pages) FROM books);
+```
 
 <br/>
 
@@ -333,6 +359,9 @@ CAST('12:31:00' AS TIME)
 
 ```sql
 <column> IN ('value_1', 'value_2', 'value_3')
+
+SELECT author_lname FROM books
+    WHERE SUBSTR(author_lname, 1, 1) IN ('C','S')
 ```
 
 #### CASE Statements
@@ -343,6 +372,16 @@ CASE
 	WHEN condition_2 THEN value_2
 	ELSE value_2
 END AS alias
+
+SELECT author_fname, author_lname,
+        CASE
+            WHEN COUNT(*) = 1 THEN '1 book'
+            ELSE CONCAT(COUNT(*), ' books')
+        END AS count
+    FROM books
+    WHERE author_lname IS NOT NULL
+    GROUP BY author_fname, author_lname;
+
 ```
 
 #### CHECK Constraints

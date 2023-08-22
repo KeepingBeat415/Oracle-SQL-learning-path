@@ -398,6 +398,10 @@ Returns all the matched and the unmatched rows for both tables
 `CROSS JOIN`
 Cartesian Product
 
+### EXIST and NOT EXIST
+
+Check whether the subquery returns some data
+
 <br/>
 
 ### 6. Oracle’s Old Style
@@ -1660,7 +1664,63 @@ SELECT * FROM dba_sys_privs;
 SELECT * FROM user_role_privs;
 ```
 
+<br/>
+
+### 19. Using OVER and PARTITION with ORDER BY
+
+---
+
+#### OVER PARTITION
+
+Works as window function
+`aggregate_function OVER(PARTITION by col_name)`
+
+```sql
+select sum(weight) over(partition by color) sum_by_shape
+  from bricks
+
+```
+
+#### OVER ORDER BY
+
+The `order by` clause enables you to compute running totals.
+`aggregate_function OVER(ORDER BY col_name)`
+
+```sql
+select sum(weight) over(partition by color order by id) running_weight_by_color
+  from brick
+```
+
+#### Rank, Dense_rank, Lead and Lag Function
+
+- Rank - Rows with the same value in the order by have the same rank.
+- Dense_rank - Rows with the same value in the order by have the same rank, but there are no gaps in the ranks
+- Row_number - each row has a new value
+
+```sql
+select id, weight
+       row_number() over(order by weight) rn,
+       rank() over(order by weight) rk,
+       dense_rank() over(order by weight) dr
+from bricks;
+```
+
+| id  | weight | RN  | RK  | DR  |
+| --- | ------ | --- | --- | --- |
+| 1   | 1      | 1   | 1   | 1   |
+| 3   | 1      | 2   | 1   | 1   |
+| 6   | 1      | 3   | 1   | 1   |
+| 4   | 2      | 4   | 4   | 2   |
+| 2   | 2      | 5   | 4   | 2   |
+| 5   | 3      | 6   | 6   | 3   |
+
+`Lead` and `Lag` to get values from rows backwards and forwards
+
+<br/>
+
 ### Notes
+
+---
 
 Order of Execution
 | Order | Clause | Function |

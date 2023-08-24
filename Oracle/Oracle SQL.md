@@ -1,3 +1,136 @@
+- [1. Retrieving Data](#1-retrieving-data)
+  - [DESCRIBE Command](#describe-command)
+  - [INFORMATION Command](#information-command)
+  - [Quote(Q) Operate](#quoteq-operate)
+  - [Concatenation Operator](#concatenation-operator)
+  - [Arithmetic Expressions](#arithmetic-expressions)
+  - [NULL Operator](#null-operator)
+  - [AND Operator](#and-operator)
+  - [OR Operator](#or-operator)
+  - [NULLS First and NULLS Last](#nulls-first-and-nulls-last)
+  - [ROWID](#rowid)
+  - [ROWNUM](#rownum)
+  - [FETCH Clause](#fetch-clause)
+  - [Substitution Variable](#substitution-variable)
+  - [DEFINE/DEF and UNDEFINE/UNDEF Commands](#definedef-and-undefineundef-commands)
+  - [ACCEPT/PROMPT](#acceptprompt)
+  - [SET VERIFY ON/OFF](#set-verify-onoff)
+- [2. Single Row Functions](#2-single-row-functions)
+  - [Character Functions](#character-functions)
+  - [Numeric Functions](#numeric-functions)
+  - [Date Functions](#date-functions)
+  - [Conversion Functions](#conversion-functions)
+  - [NVL Functions](#nvl-functions)
+  - [COALESCE Functions](#coalesce-functions)
+  - [Regular Expressions](#regular-expressions)
+  - [MOD Function](#mod-function)
+- [3. Conditional Expression](#3-conditional-expression)
+  - [Conditional Expression](#conditional-expression)
+  - [decode Function](#decode-function)
+- [4. Group Functions](#4-group-functions)
+  - [Group Function](#group-function)
+  - [listagg Functions](#listagg-functions)
+  - [Group By Clause](#group-by-clause)
+  - [Having Clause](#having-clause)
+  - [Nested Group Functions](#nested-group-functions)
+- [5. Joining Multiple Tables](#5-joining-multiple-tables)
+  - [Natural Join](#natural-join)
+  - [Join](#join)
+  - [Inner Join](#inner-join)
+  - [Self Join](#self-join)
+  - [Joining Non-Equijoins](#joining-non-equijoins)
+- [Outer Join](#outer-join)
+- [EXIST and NOT EXIST](#exist-and-not-exist)
+- [6. Oracle’s Old Style](#6-oracles-old-style)
+  - [INNER JOIN](#inner-join-1)
+  - [OUTER JOIN](#outer-join-1)
+- [7. Using Subqueries](#7-using-subqueries)
+  - [Single Row Subqueries](#single-row-subqueries)
+  - [Multiple Row Subqueries](#multiple-row-subqueries)
+  - [Multiple Column Subqueries](#multiple-column-subqueries)
+  - [Scalar Subqueries](#scalar-subqueries)
+  - [Correlated Subqueries](#correlated-subqueries)
+  - [EXISTS Operator](#exists-operator)
+  - [NOT EXISTS Operator](#not-exists-operator)
+- [8. Set Operators](#8-set-operators)
+  - [SET Operators](#set-operators)
+- [9. Data Definition Language (DDL)](#9-data-definition-language-ddl)
+  - [Database Object Naming Rules](#database-object-naming-rules)
+  - [CREATE TABLE Statement](#create-table-statement)
+  - [CREATE TABLE AS SELECT Statement (CTA)](#create-table-as-select-statement-cta)
+  - [ALETER TABLE Statement](#aleter-table-statement)
+  - [COMMENT Statement](#comment-statement)
+  - [RENAME Statement](#rename-statement)
+- [10. Data Manipulation Language (DML)](#10-data-manipulation-language-dml)
+  - [INSERT Statement](#insert-statement)
+  - [INSERT INTO SELECT Statement](#insert-into-select-statement)
+  - [Multiple Insert Statement](#multiple-insert-statement)
+  - [UPDATE Statement](#update-statement)
+  - [DELETE Statement](#delete-statement)
+  - [MERGE Statement](#merge-statement)
+  - [Transaction Control Language (TCL)](#transaction-control-language-tcl)
+- [11. Flashback Operations](#11-flashback-operations)
+  - [Flashback Operations](#flashback-operations)
+  - [PURGE Operations](#purge-operations)
+  - [Flashback Query](#flashback-query)
+  - [Flashback Versions Query](#flashback-versions-query)
+  - [12. Oracle Constraints in SQL](#12-oracle-constraints-in-sql)
+  - [`NOT NULL` Constraint](#not-null-constraint)
+  - [`UNIQUE` Constraint](#unique-constraint)
+  - [`PRIMARY KEY` Constraint](#primary-key-constraint)
+  - [`FOREIGN KEY` Constraint](#foreign-key-constraint)
+  - [The `ON DELETE CASCADE | ON DELETE SET NULL` Clause](#the-on-delete-cascade--on-delete-set-null-clause)
+  - [`CHECK` Constraint](#check-constraint)
+  - [Adding Constraints via ALTER TABLE Statements](#adding-constraints-via-alter-table-statements)
+  - [Dropping (Removing) Constraints](#dropping-removing-constraints)
+  - [Use the ONLINE keyword to allow DML operations while dropping constraints](#use-the-online-keyword-to-allow-dml-operations-while-dropping-constraints)
+  - [Cascading Constraints in Oracle](#cascading-constraints-in-oracle)
+  - [Renaming Constraints](#renaming-constraints)
+  - [Disabling/Enabling Constraints](#disablingenabling-constraints)
+  - [Status of Constraints](#status-of-constraints)
+  - [Deferring Constraint](#deferring-constraint)
+- [13. Database Views](#13-database-views)
+  - [Using the WITH CHECK OPTION Clause](#using-the-with-check-option-clause)
+  - [Using WITH READ ONLY Clause](#using-with-read-only-clause)
+  - [Dropping View](#dropping-view)
+- [14. Data Dictionary Views](#14-data-dictionary-views)
+  - [Dictionary View](#dictionary-view)
+  - [USER, DBA, ALL, V$ Prefixes](#user-dba-all-v-prefixes)
+  - [USER/DBA/ALL_OBJECTS View](#userdbaall_objects-view)
+  - [USER/DBA/ALL_TABLES View](#userdbaall_tables-view)
+  - [USER_TAB_COLUMNS View](#user_tab_columns-view)
+  - [USER_CONSTRAINTS Data Dictionary View](#user_constraints-data-dictionary-view)
+  - [USER_TAB_COMMENTS / USER_COL_COMMENTS](#user_tab_comments--user_col_comments)
+- [15. Oracle Sequences](#15-oracle-sequences)
+  - [Creating Sequences](#creating-sequences)
+  - [Modifying Sequences](#modifying-sequences)
+  - [Dropping Sequences](#dropping-sequences)
+  - [Using Sequences](#using-sequences)
+  - [Using Sequences as Default Values](#using-sequences-as-default-values)
+  - [Sequence Caching](#sequence-caching)
+  - [USER_SEQUENCES View](#user_sequences-view)
+  - [The DROP IDENTITY clause removes the identity property but keeps the column](#the-drop-identity-clause-removes-the-identity-property-but-keeps-the-column)
+  - [START WITH LIMIT VALUE sets the existing maximum/minimum value + INCREMENT](#start-with-limit-value-sets-the-existing-maximumminimum-value--increment)
+- [16. Oracle Synonyms](#16-oracle-synonyms)
+  - [Creating, Using and Dropping Synonyms](#creating-using-and-dropping-synonyms)
+  - [Analyzing the USER_SYNONYMS View](#analyzing-the-user_synonyms-view)
+- [17.Oracle Indexes in SQL](#17oracle-indexes-in-sql)
+  - [The default index type is `Non-Unique B-tree Index`](#the-default-index-type-is-non-unique-b-tree-index)
+  - [Unique indexes prevent duplicate value entry](#unique-indexes-prevent-duplicate-value-entry)
+  - [By using the ALTER TABLE statement](#by-using-the-alter-table-statement)
+  - [Remove (Drop) Indexes](#remove-drop-indexes)
+  - [Function-Based Indexes](#function-based-indexes)
+  - [Analyzing the UESER\*INDEXES and USER_IND_COLUMNS Views](#analyzing-the-ueserindexes-and-user_ind_columns-views)
+  - [Altering Indexes](#altering-indexes)
+- [18. Managing Oracle Privileges and Roles](#18-managing-oracle-privileges-and-roles)
+  - [Creating a Database User](#creating-a-database-user)
+- [19. Using OVER and PARTITION with ORDER BY](#19-using-over-and-partition-with-order-by)
+  - [OVER PARTITION](#over-partition)
+  - [OVER ORDER BY](#over-order-by)
+  - [Rank, Dense_rank](#rank-dense_rank)
+  - [Lead, Lag](#lead-lag)
+- [Notes](#notes)
+
 ### 1. Retrieving Data
 
 ---
@@ -75,6 +208,7 @@ FETCH [FIRST | NEXT] [row_count | percent PERCENT] ROW[S] [ONLY | WITH TIES]
 
 - ONLY is used to return exactly the specified number of rows
 - WITH TIES returns extra rows with the same value as the last row fetched, must specify the order_by_clause.
+- If `OFFSET` value less than 0, then value will consider as 0
 
 #### Substitution Variable
 
@@ -1691,7 +1825,7 @@ select sum(weight) over(partition by color order by id) running_weight_by_color
   from brick
 ```
 
-#### Rank, Dense_rank, Lead and Lag Function
+#### Rank, Dense_rank
 
 - Rank - Rows with the same value in the order by have the same rank.
 - Dense_rank - Rows with the same value in the order by have the same rank, but there are no gaps in the ranks
@@ -1714,7 +1848,42 @@ from bricks;
 | 2   | 2      | 5   | 4   | 2   |
 | 5   | 3      | 6   | 6   | 3   |
 
+#### Lead, Lag
+
 `Lead` and `Lag` to get values from rows backwards and forwards
+
+```sql
+SELECT hire_date, last_name,
+       LEAD(hire_date, 1) OVER (ORDER BY hire_date) AS "NextHired"
+  FROM employees
+  WHERE department_id = 30
+  ORDER BY hire_date;
+```
+
+| HIRE_DATE | LAST_NAME  | Next Hired |
+| --------- | ---------- | ---------- |
+| 07-DEC-02 | Raphaely   | 18-MAY-03  |
+| 18-MAY-03 | Khoo       | 24-JUL-05  |
+| 24-JUL-05 | Tobias     | 24-DEC-05  |
+| 24-DEC-05 | Baida      | 15-NOV-06  |
+| 15-NOV-06 | Himuro     | 10-AUG-07  |
+| 10-AUG-07 | Colmenares |
+
+```sql
+SELECT hire_date, last_name, salary,
+       LAG(salary, 1, 0) OVER (ORDER BY hire_date) AS prev_sal
+  FROM employees
+  WHERE job_id = 'PU_CLERK'
+  ORDER BY hire_date;
+```
+
+| HIRE_DATE | LAST_NAME  | SALARY | PREV_SAL |
+| --------- | ---------- | ------ | -------- |
+| 18-MAY-03 | Khoo       | 3100   | 0        |
+| 24-JUL-05 | Tobias     | 2800   | 3100     |
+| 24-DEC-05 | Baida      | 2900   | 2800     |
+| 15-NOV-06 | Himuro     | 2600   | 2900     |
+| 10-AUG-07 | Colmenares | 2500   | 2600     |
 
 <br/>
 

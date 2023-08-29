@@ -448,6 +448,7 @@ SELECT listagg(first_name,',') AS Employees
 
 #### Group By Clause
 
+- The `WHERE` clause restricts **rows**, whereas the `HAVING` clause restricts **groups**
 - Column aliases cannot be used with the GROUP BY clause
 - SELECT clause cannot have any different columns than what is used in the GROUP BY clause
 
@@ -473,6 +474,7 @@ Multiple columns Group By, then Combination Column's Values
 
 - The group functions cannot be used in the WHERE clause
 - The WHERE clause filters rows whereas the **HAVING clause filters grouped data**
+- The HAVING clause can precede the **GROUP BY** clause
 
 #### Nested Group Functions
 
@@ -811,7 +813,7 @@ CREATE TABLE my_employees(employee_id   NUMBER(3)     NOT NULL,
 
 `CREATE TABLE table_name[(column1, column2, ...0)] AS select_query;`
 
-- Important: while creating a table from a SELECT query, the only constraints that are inherited are the **NOT constraints**.
+- Important: while creating a table from a SELECT query, the only constraints that are inherited are the **NOT NULL and UNIQUE constraints**.
 - A table's structure can be copied without any data
 - Force 'select_query' return NULL
 

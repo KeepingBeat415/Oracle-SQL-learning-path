@@ -199,7 +199,8 @@ Consecutive logical sequence number given to the rows fetched from the table
 
 #### FETCH Clause
 
-Used in conjunction with the SELECT and ORDER BY clauses to limit the rows and retrieve a portion of the returning rows
+- Used in conjunction with the SELECT and ORDER BY clauses to limit the rows and retrieve a portion of the returning rows
+- `Null` values are displayed last for ascending sequences and first for descending sequences.
 
 ```sql
 [OFFSET rows_to_skip ROW[S]]
@@ -255,6 +256,10 @@ substr(source_str, position[, length]) -- starting index 1
 substr('SQL Course', 1, 3) -- OUTPUT: SQL
 
 instr(str, substring[, position, occurrence])
+
+-- The INSTR functions search string for substring.
+SELECT INSTR('CORPORATE FLOOR','OR', 3, 2) "Instring" FROM DUAL;
+-- OUTPUT: 14
 
 trim([[LEADING|TRAILING|BOTH] trim_character FROM] string)
 trim(LEADING '*' FROM '*** String ***') -- OUTPUT: String ***
@@ -428,6 +433,11 @@ count([DISTINCT | ALL] expression)
 
 sum([DISTINCT | ALL] expression) -- with numerical data
 ```
+
+- `COUNT(*)` returns the number of rows in a table that satisfy the criteria of the SELECT statement, including duplicate rows and rows containing null values in any of the columns.
+  In contrast,
+- `COUNT(expr)` returns the number of non-null values that are in the column identified by expr.
+- `COUNT(DISTINCT expr)` returns the number of unique, non-null values that are in the column identified by expr.
 
 #### listagg Functions
 
@@ -754,6 +764,7 @@ SELECT * FROM departments d
 UNION
 
 - returns all rows of both queries by eliminating duplicate rows
+- Must have the same number of fields in the result sets with similar data types
 
 UNION ALL
 

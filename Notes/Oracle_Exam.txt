@@ -7,5 +7,13 @@ E, D, -, C, D          |    BE, -, AC, D, -     |
 C, A, ABE, C, -        |    -, B, -, D, A       |
 D, D, D, ADE, ACD      |    -, A, B, ABE, -     |
 
+21 - 40 (2023-08-31)
+
+A, B, B, BCD, B        |    -, C, C, CDE, -     |  45%
+AD, B, C, CD-, B       |    A, C, AC, BDE, -    |   
+ABC, A, BE, B, DE      |    -, D, CF, C, -      |   
+B, D, BC, AE, B        |    -, -, AD, -, -      |   
+
+
+
 ---------- NEED TO BLOCK --------
-Q8, 

@@ -1530,6 +1530,8 @@ CONSTRAINT_TYPE
 - Sequence numbers are stored independent of tables so a sequence can be used by multiple users and for multiple tables
 - Sequence numbers cannot be rolled back
 - Sequence can be used anywhere to generate unique numbers
+- When the `MAXVALUE` limit for the sequence is reached, can increase the `MAXVALUE` limit by using the `ALTER SEQUENCE` statement
+- `CURRVAL` refer to the last sequence number that has been generated
 
 #### Creating Sequences
 

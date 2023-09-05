@@ -1,4 +1,4 @@
-2018/06/30 () 
+2018/06/30 - Oracle Exam
 
 1 - 20 (2023-08-30)
 
@@ -14,6 +14,12 @@ AD, B, C, CD-, B       |    A, C, AC, BDE, -    |
 ABC, A, BE, B, DE      |    -, D, CF, C, -      |   
 B, D, BC, AE, B        |    -, -, AD, -, -      |   
 
+41 - 60 (2023-09-04)
+
+D, C, C, C, A          |    -, D, -, -, -       |  65%
+BD, BCE, CF, D, D      |    -, ABE, CDF, -, -   |
+B, D, C, CD, B         |    -, C, -, -, A       |
+B, ADE, A, B, D        |    -, -, C, C, -       |
 
 
 ---------- NEED TO BLOCK --------

@@ -21,5 +21,11 @@ BD, BCE, CF, D, D      |    -, ABE, CDF, -, -   |
 B, D, C, CD, B         |    -, C, -, -, A       |
 B, ADE, A, B, D        |    -, -, C, C, -       |
 
+61 - 80 (2023-09-05)
+
+B, A, DE, C, ACD,      |    -, B, -, B, BCD     |  35%
+C, CDE, AD, D, BD      |    CD, ACE, -, -, AC   |
+B, A, A, BD, BC        |    -, D, -, - , CD     |
+BC, ABC, DE, A, AD     |    AB, -, BD, C, BD    |   
 
 ---------- NEED TO BLOCK --------

@@ -26,7 +26,7 @@
   - [MOD Function](#mod-function)
 - [3. Conditional Expression](#3-conditional-expression)
   - [Conditional Expression](#conditional-expression)
-  - [decode Function](#decode-function)
+  - [Decode Function](#decode-function)
 - [4. Group Functions](#4-group-functions)
   - [Group Function](#group-function)
   - [listagg Functions](#listagg-functions)
@@ -55,6 +55,7 @@
 - [8. Set Operators](#8-set-operators)
   - [SET Operators](#set-operators)
 - [9. Data Definition Language (DDL)](#9-data-definition-language-ddl)
+  - [Data Type](#data-type)
   - [Database Object Naming Rules](#database-object-naming-rules)
   - [CREATE TABLE Statement](#create-table-statement)
   - [CREATE TABLE AS SELECT Statement (CTA)](#create-table-as-select-statement-cta)
@@ -131,6 +132,8 @@
   - [Lead, Lag](#lead-lag)
 - [Notes](#notes)
 
+<br/>
+
 ### 1. Retrieving Data
 
 ---
@@ -171,12 +174,12 @@ Arithmetic operations with the NULL values return NULL
 
 #### NULL Operator
 
-'= NULL' is not the same as the 'IS NULL'
+`= NULL` is not the same as the `IS NULL`
 
 #### AND Operator
 
-TRUE AND NULL => NULL
-FALSE AND NULL => FALSE
+TRUE AND NULL => NULL  
+FALSE AND NULL => FALSE  
 NULL AND NULL => NULL
 
 #### OR Operator
@@ -245,8 +248,6 @@ Displays the status of the variable before and after the substitution.
 
 ---
 
-Character Functions, Number Functions, Date Functions, Conversion Functions, General Functions
-
 #### Character Functions
 
 ```sql
@@ -276,6 +277,7 @@ ltrim('www.yourwebsite.com', 'w.') -- OUTPUT: yourwebsite.com
 
 replace(string, string_to_replace[, replacement_string])
 -- if not specify any replacement string, then will remove any exact matched characters
+replace('JACK and JUE','J','BL') -- OUTPUT: BLACK and BLUE
 
 lpad(string, target_length, padding_expression)
 rpad(string, target_length, padding_expression)
@@ -366,10 +368,10 @@ MOD(3, 2) -- OUTPUT: 1
 case ... when Expression
 
 case expression when comparsion_1 then result_1
-							 [when comparsion_2 then result_2
-								...
-								when comparsion_n then result_n
-								else result]
+               [when comparsion_2 then result_2
+               ...
+               when comparsion_n then result_n
+               else result]
 end
 ```
 
@@ -402,9 +404,7 @@ WHERE (CASE
        END) = 1;
 ```
 
----
-
-#### decode Function
+#### Decode Function
 
 To provide if-then-else logic in SQL, only in Oracle
 
@@ -438,7 +438,6 @@ sum([DISTINCT | ALL] expression) -- with numerical data
 ```
 
 - `COUNT(*)` returns the number of rows in a table that satisfy the criteria of the SELECT statement, including duplicate rows and rows containing null values in any of the columns.
-  In contrast,
 - `COUNT(expr)` returns the number of non-null values that are in the column identified by expr.
 - `COUNT(DISTINCT expr)` returns the number of unique, non-null values that are in the column identified by expr.
 
@@ -469,19 +468,19 @@ SELECT listagg(first_name,',') AS Employees
 SELECT expression1, expression2, ... , expression_n, aggregate_function
        (aggregate_expression)
   FROM table_name
-  [WHERE condition]
+ [WHERE condition]
   GROUP BY expression1, experssion2, ... , expression_n
-  [HAVING group_condition]
-  [ORDER BY order_expression]
+ [HAVING group_condition]
+[ORDER BY order_expression]
 ```
+
+Multiple columns Group By, then Combination Column's Values
 
 ```sql
 SELECT job_id, department_id, avg(salary)
   FROM employees
   GROUP BY job_id, department_id;
 ```
-
-Multiple columns Group By, then Combination Column's Values
 
 #### Having Clause
 
@@ -491,10 +490,10 @@ Multiple columns Group By, then Combination Column's Values
 
 #### Nested Group Functions
 
-- Can be nested to a depth of two have to using GROUP BY
+- Can be nested to a depth of **two** have to using GROUP BY
 - Cannot write an individual column name in the select statement
 - Cannot use WHERE Clause and HAVING Clause
-- GroupFunction1(GroupFunction2())
+- GroupFunction1( GroupFunction2( ) )
 
 <br/>
 
@@ -796,6 +795,14 @@ SELECT job_id, department_id, NULL, NULL
 ### 9. Data Definition Language (DDL)
 
 ---
+
+##### Data Type
+
+1. Character
+   - `CHAR(10)` - fixed length, computer decides coding system
+   - `NCHAR(10)` - fixed length, UNICODE
+   - `VARCHAR2(10)` - variable length, computer decides coding system
+   - `NVARCHAR2(10)` - variable length, UNICODE
 
 ##### Database Object Naming Rules
 

@@ -28,4 +28,10 @@ C, CDE, AD, D, BD      |    CD, ACE, -, -, AC   |
 B, A, A, BD, BC        |    -, D, -, - , CD     |
 BC, ABC, DE, A, AD     |    AB, -, BD, C, BD    |   
 
+81 - 90 (2023-09-06)
+
+AE, BC, AC, BCF, C     |    AC, AD, AD, -, D    |  40%
+D, AB, BD, CD, BC      |    AC, -, -, AC, -     |
+
+
 ---------- NEED TO BLOCK --------

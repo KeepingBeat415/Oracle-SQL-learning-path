@@ -55,9 +55,9 @@
 - [8. Set Operators](#8-set-operators)
   - [SET Operators](#set-operators)
 - [9. Data Definition Language (DDL)](#9-data-definition-language-ddl)
-  - [Data Type](#data-type)
-  - [Database Object Naming Rules](#database-object-naming-rules)
-  - [CREATE TABLE Statement](#create-table-statement)
+    - [Data Type](#data-type)
+    - [Database Object Naming Rules](#database-object-naming-rules)
+    - [CREATE TABLE Statement](#create-table-statement)
   - [CREATE TABLE AS SELECT Statement (CTA)](#create-table-as-select-statement-cta)
   - [ALETER TABLE Statement](#aleter-table-statement)
   - [COMMENT Statement](#comment-statement)
@@ -97,11 +97,11 @@
 - [14. Data Dictionary Views](#14-data-dictionary-views)
   - [Dictionary View](#dictionary-view)
   - [USER, DBA, ALL, V$ Prefixes](#user-dba-all-v-prefixes)
-  - [USER/DBA/ALL_OBJECTS View](#userdbaall_objects-view)
-  - [USER/DBA/ALL_TABLES View](#userdbaall_tables-view)
-  - [USER_TAB_COLUMNS View](#user_tab_columns-view)
-  - [USER_CONSTRAINTS Data Dictionary View](#user_constraints-data-dictionary-view)
-  - [USER_TAB_COMMENTS / USER_COL_COMMENTS](#user_tab_comments--user_col_comments)
+  - [USER/DBA/ALL\_OBJECTS View](#userdbaall_objects-view)
+  - [USER/DBA/ALL\_TABLES View](#userdbaall_tables-view)
+  - [USER\_TAB\_COLUMNS View](#user_tab_columns-view)
+  - [USER\_CONSTRAINTS Data Dictionary View](#user_constraints-data-dictionary-view)
+  - [USER\_TAB\_COMMENTS / USER\_COL\_COMMENTS](#user_tab_comments--user_col_comments)
 - [15. Oracle Sequences](#15-oracle-sequences)
   - [Creating Sequences](#creating-sequences)
   - [Modifying Sequences](#modifying-sequences)
@@ -109,26 +109,26 @@
   - [Using Sequences](#using-sequences)
   - [Using Sequences as Default Values](#using-sequences-as-default-values)
   - [Sequence Caching](#sequence-caching)
-  - [USER_SEQUENCES View](#user_sequences-view)
+  - [USER\_SEQUENCES View](#user_sequences-view)
   - [The DROP IDENTITY clause removes the identity property but keeps the column](#the-drop-identity-clause-removes-the-identity-property-but-keeps-the-column)
   - [START WITH LIMIT VALUE sets the existing maximum/minimum value + INCREMENT](#start-with-limit-value-sets-the-existing-maximumminimum-value--increment)
 - [16. Oracle Synonyms](#16-oracle-synonyms)
   - [Creating, Using and Dropping Synonyms](#creating-using-and-dropping-synonyms)
-  - [Analyzing the USER_SYNONYMS View](#analyzing-the-user_synonyms-view)
+  - [Analyzing the USER\_SYNONYMS View](#analyzing-the-user_synonyms-view)
 - [17.Oracle Indexes in SQL](#17oracle-indexes-in-sql)
   - [The default index type is `Non-Unique B-tree Index`](#the-default-index-type-is-non-unique-b-tree-index)
   - [Unique indexes prevent duplicate value entry](#unique-indexes-prevent-duplicate-value-entry)
   - [By using the ALTER TABLE statement](#by-using-the-alter-table-statement)
   - [Remove (Drop) Indexes](#remove-drop-indexes)
   - [Function-Based Indexes](#function-based-indexes)
-  - [Analyzing the UESER\*INDEXES and USER_IND_COLUMNS Views](#analyzing-the-ueserindexes-and-user_ind_columns-views)
+  - [Analyzing the UESER\*INDEXES and USER\_IND\_COLUMNS Views](#analyzing-the-ueserindexes-and-user_ind_columns-views)
   - [Altering Indexes](#altering-indexes)
 - [18. Managing Oracle Privileges and Roles](#18-managing-oracle-privileges-and-roles)
   - [Creating a Database User](#creating-a-database-user)
 - [19. Using OVER and PARTITION with ORDER BY](#19-using-over-and-partition-with-order-by)
   - [OVER PARTITION](#over-partition)
   - [OVER ORDER BY](#over-order-by)
-  - [Rank, Dense_rank](#rank-dense_rank)
+  - [Rank, Dense\_rank](#rank-dense_rank)
   - [Lead, Lag](#lead-lag)
 - [Notes](#notes)
 
@@ -184,8 +184,8 @@ NULL AND NULL => NULL
 
 #### OR Operator
 
-TRUE OR NULL => TRUE
-FALSE OR NULL => NULL
+TRUE OR NULL => TRUE  
+FALSE OR NULL => NULL  
 NULL OR NULL => NULL
 
 #### NULLS First and NULLS Last
@@ -653,7 +653,7 @@ SELECT first_name, last_name, department_id, salary
 SELECT first_name, last_name, department_id, salary
 	FROM employees
 	WHERE (department_id, salary) IN
-                  (SELECT salary
+                  (SELECT department_id, salary
                     FROM employees
                     WHERE employee_id IN (103, 105, 110));
 ```
@@ -729,10 +729,9 @@ SELECT employee_id, first_name, last_name, department_name, salary,
 ```sql
 SELECT employee_id, first_name, last_name, department_id, salary
   FROM employees a
-  WHERE EXISTS
-            (SELECT null
-						  FROM employees
-						  WHERE manager_id = a.employee_id);
+  WHERE EXISTS (SELECT null
+                  FROM employees
+                  WHERE manager_id = a.employee_id);
 ```
 
 #### NOT EXISTS Operator
@@ -766,7 +765,7 @@ SELECT * FROM departments d
 UNION
 
 - returns all rows of both queries by eliminating duplicate rows
-- Must have the same number of fields in the result sets with similar data types
+- Must have the same number of fields in the result sets with **similar data types**
 
 UNION ALL
 
@@ -818,7 +817,7 @@ SELECT job_id, department_id, NULL, NULL
 ```sql
 CREATE TABLE schema_name.table_name
   (column_name_1 datatype [DEFAULT default_value] [NULL | NOT NULL],
-  column_name_2 datatype [DEFAULT default_value] [NULL | NOT NULL],
+   column_name_2 datatype [DEFAULT default_value] [NULL | NOT NULL],
   ...);
 ```
 
@@ -851,8 +850,8 @@ CREATE TABLE employees_copy AS (SELECT * employees WHERE 1=2);
 ```sql
 ALTER TABLE table_name
   ADD ( column_name1 datatype [DEFAULT default_value1] [NULL | NOT NULL],
-		    column_name1 datatype [DEFAULT default_value1] [NULL | NOT NULL],
-		 ...);
+        column_name1 datatype [DEFAULT default_value1] [NULL | NOT NULL],
+        ...);
 ```
 
 - MODIFY Statement
@@ -860,8 +859,8 @@ ALTER TABLE table_name
 ```sql
 ALTER TABLE table_name
   MODIFY (column_name datatype [DEFAULT default_value] [NULL | NOT NULL]
-				  column_name datatype [DEFAULT default_value] [NULL | NOT NULL]
-				...);
+          column_name datatype [DEFAULT default_value] [NULL | NOT NULL]
+          ..);
 ```
 
 - DROP Statement
@@ -873,15 +872,15 @@ ALTER TABLE table_name DROP (column_name1, column_name2, ... );
 
 - SET UNUSED Option
 
-1. use 'ONLINE' keyword to indicate that DML operations are allowed on the table while marking columns as unused
+1. use `ONLINE` keyword to indicate that **DML operations are allowed** on the table while marking columns as unused
 1. columns are dropped logically by becoming invisible and inaccessible
 
 ```sql
 ALTER TABLE table_name SET UNUSED COLUMN column_name;
 ALTER TABLE table_name SET UNUSED (column_name1, column_name2, ... );
-ALTER TABLE table_name DROP UNUSED COLUMNS;
-
 ALTER TABLE table_name SET UNUSED (column_name1, column_name2, ... ) ONLINE;
+
+ALTER TABLE table_name DROP UNUSED COLUMNS;
 ```
 
 - READ ONLY Tables
@@ -954,7 +953,7 @@ ALTER TABLE old_name RENAME TO new_name;
 
 #### INSERT Statement
 
-Unspecified columns will be filled with NULL values or DEFAULT values
+Unspecified columns will be filled with `NULL` values or `DEFAULT` values
 
 ```sql
 INSERT INTO table_name (column1, column2, ... , column_n)

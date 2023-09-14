@@ -55,9 +55,9 @@
 - [8. Set Operators](#8-set-operators)
   - [SET Operators](#set-operators)
 - [9. Data Definition Language (DDL)](#9-data-definition-language-ddl)
-    - [Data Type](#data-type)
-    - [Database Object Naming Rules](#database-object-naming-rules)
-    - [CREATE TABLE Statement](#create-table-statement)
+  - [Data Type](#data-type)
+  - [Database Object Naming Rules](#database-object-naming-rules)
+  - [CREATE TABLE Statement](#create-table-statement)
   - [CREATE TABLE AS SELECT Statement (CTA)](#create-table-as-select-statement-cta)
   - [ALETER TABLE Statement](#aleter-table-statement)
   - [COMMENT Statement](#comment-statement)
@@ -97,11 +97,11 @@
 - [14. Data Dictionary Views](#14-data-dictionary-views)
   - [Dictionary View](#dictionary-view)
   - [USER, DBA, ALL, V$ Prefixes](#user-dba-all-v-prefixes)
-  - [USER/DBA/ALL\_OBJECTS View](#userdbaall_objects-view)
-  - [USER/DBA/ALL\_TABLES View](#userdbaall_tables-view)
-  - [USER\_TAB\_COLUMNS View](#user_tab_columns-view)
-  - [USER\_CONSTRAINTS Data Dictionary View](#user_constraints-data-dictionary-view)
-  - [USER\_TAB\_COMMENTS / USER\_COL\_COMMENTS](#user_tab_comments--user_col_comments)
+  - [USER/DBA/ALL_OBJECTS View](#userdbaall_objects-view)
+  - [USER/DBA/ALL_TABLES View](#userdbaall_tables-view)
+  - [USER_TAB_COLUMNS View](#user_tab_columns-view)
+  - [USER_CONSTRAINTS Data Dictionary View](#user_constraints-data-dictionary-view)
+  - [USER_TAB_COMMENTS / USER_COL_COMMENTS](#user_tab_comments--user_col_comments)
 - [15. Oracle Sequences](#15-oracle-sequences)
   - [Creating Sequences](#creating-sequences)
   - [Modifying Sequences](#modifying-sequences)
@@ -109,26 +109,26 @@
   - [Using Sequences](#using-sequences)
   - [Using Sequences as Default Values](#using-sequences-as-default-values)
   - [Sequence Caching](#sequence-caching)
-  - [USER\_SEQUENCES View](#user_sequences-view)
+  - [USER_SEQUENCES View](#user_sequences-view)
   - [The DROP IDENTITY clause removes the identity property but keeps the column](#the-drop-identity-clause-removes-the-identity-property-but-keeps-the-column)
   - [START WITH LIMIT VALUE sets the existing maximum/minimum value + INCREMENT](#start-with-limit-value-sets-the-existing-maximumminimum-value--increment)
 - [16. Oracle Synonyms](#16-oracle-synonyms)
   - [Creating, Using and Dropping Synonyms](#creating-using-and-dropping-synonyms)
-  - [Analyzing the USER\_SYNONYMS View](#analyzing-the-user_synonyms-view)
+  - [Analyzing the USER_SYNONYMS View](#analyzing-the-user_synonyms-view)
 - [17.Oracle Indexes in SQL](#17oracle-indexes-in-sql)
   - [The default index type is `Non-Unique B-tree Index`](#the-default-index-type-is-non-unique-b-tree-index)
   - [Unique indexes prevent duplicate value entry](#unique-indexes-prevent-duplicate-value-entry)
   - [By using the ALTER TABLE statement](#by-using-the-alter-table-statement)
   - [Remove (Drop) Indexes](#remove-drop-indexes)
   - [Function-Based Indexes](#function-based-indexes)
-  - [Analyzing the UESER\*INDEXES and USER\_IND\_COLUMNS Views](#analyzing-the-ueserindexes-and-user_ind_columns-views)
+  - [Analyzing the UESER\*INDEXES and USER_IND_COLUMNS Views](#analyzing-the-ueserindexes-and-user_ind_columns-views)
   - [Altering Indexes](#altering-indexes)
 - [18. Managing Oracle Privileges and Roles](#18-managing-oracle-privileges-and-roles)
   - [Creating a Database User](#creating-a-database-user)
 - [19. Using OVER and PARTITION with ORDER BY](#19-using-over-and-partition-with-order-by)
   - [OVER PARTITION](#over-partition)
   - [OVER ORDER BY](#over-order-by)
-  - [Rank, Dense\_rank](#rank-dense_rank)
+  - [Rank, Dense_rank](#rank-dense_rank)
   - [Lead, Lag](#lead-lag)
 - [Notes](#notes)
 
@@ -984,7 +984,8 @@ CREATE TABLE employee_addresses AS
 #### Multiple Insert Statement
 
 1. Unconditional Insert Statement
-   Subquery is mandatory in an insert all syntax
+
+- Subquery is mandatory in an insert all syntax
 
 ```sql
 INSERT ALL
@@ -994,10 +995,10 @@ INSERT ALL
   Subquery;
 ```
 
-1. Conditional Insert Statement
+2. Conditional Insert Statement
 
-- to insert rows into the related tables in one step based on the specified conditions
-- conditions are specified between the WHEN-THEN keywords
+- To insert rows into the related tables in one step based on the specified conditions
+- Conditions are specified between the WHEN-THEN keywords
 
 ```sql
 INSERT ALL
@@ -1026,7 +1027,7 @@ INSERT ALL
   SELECT * FROM employees;
 ```
 
-1. Conditional INSERT FIRST Statement
+3. Conditional INSERT FIRST Statement
 
 - For the first WHEN clause that evaluates to true, then database executes the corresponding INTO clause and skip subsequent WHEN clauses for the given row.
 
@@ -1043,7 +1044,7 @@ INSERT FIRST
 Subquery;
 ```
 
-1. Pivoting Insert
+4. Pivoting Insert
 
 - For converting non-relational data to a relational format and inserting it into a relational table
 
@@ -1234,7 +1235,7 @@ CREATE TABLE table_name
 #### `NOT NULL` Constraint
 
 - Prevent the insertion of NULL value
-- NOT NULL constraints can only be created at the column-level
+- NOT NULL constraints can **only** be created at the column-level
 
 #### `UNIQUE` Constraint
 
@@ -1254,8 +1255,8 @@ CREATE TABLE managers
 
 #### `PRIMARY KEY` Constraint
 
-- Simple Primary Key(single-column) and Composite Primary Key(multiple columns)
-- Composite primary key can only be created at the table-level
+- Simple Primary Key (single-column) and Composite Primary Key (multiple columns)
+- Composite primary key can **only** be created at the table-level
 
 ```sql
 CREATE TABLE executives
@@ -1350,8 +1351,7 @@ CREATE TABLE managers
 `ALTER TABLE employees MODIFY salary CONSTRAINT emp_salary_nn NOT NULL;`
 
 1. To add a NOT NULL CONSTRAINT, we use the ALTER TABLE MODIFY COLUMN clause
-1. The table must be empty or all the values of the NOT NULL column must
-   have a value.
+1. The table must be empty or all the values of the NOT NULL column must have a value
 
 `ALTER TABLE table_name ADD UNIQUE(column_name);`
 
@@ -1373,8 +1373,7 @@ ALTER TABLE table_name DROP PRIMARY KEY CASCADE;
 
 #### Cascading Constraints in Oracle
 
-- Use the CASCADE CONSTRAINTS clause while dropping a column, all the constraints
-- Referring to that column's PRIMARY and UNIQUE keys are dropped.
+- Use the CASCADE CONSTRAINTS clause while dropping a column, all the constraints referring to that column's PRIMARY and UNIQUE keys are dropped.
 
 `ALTER TABLE table_name DROP COLUMN column_name CASCADE CONSTRAINTS;`
 

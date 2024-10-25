@@ -6,4 +6,4 @@
 
 #### 2. Oracle SQL knowledge
 
-#### 3.
+#### 3. PL/SQL knowledge

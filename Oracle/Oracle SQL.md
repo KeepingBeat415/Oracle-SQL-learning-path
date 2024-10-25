@@ -55,9 +55,9 @@
 - [8. Set Operators](#8-set-operators)
   - [SET Operators](#set-operators)
 - [9. Data Definition Language (DDL)](#9-data-definition-language-ddl)
-  - [Data Type](#data-type)
-  - [Database Object Naming Rules](#database-object-naming-rules)
-  - [CREATE TABLE Statement](#create-table-statement)
+    - [Data Type](#data-type)
+    - [Database Object Naming Rules](#database-object-naming-rules)
+    - [CREATE TABLE Statement](#create-table-statement)
   - [CREATE TABLE AS SELECT Statement (CTA)](#create-table-as-select-statement-cta)
   - [ALETER TABLE Statement](#aleter-table-statement)
   - [COMMENT Statement](#comment-statement)
@@ -97,11 +97,11 @@
 - [14. Data Dictionary Views](#14-data-dictionary-views)
   - [Dictionary View](#dictionary-view)
   - [USER, DBA, ALL, V$ Prefixes](#user-dba-all-v-prefixes)
-  - [USER/DBA/ALL_OBJECTS View](#userdbaall_objects-view)
-  - [USER/DBA/ALL_TABLES View](#userdbaall_tables-view)
-  - [USER_TAB_COLUMNS View](#user_tab_columns-view)
-  - [USER_CONSTRAINTS Data Dictionary View](#user_constraints-data-dictionary-view)
-  - [USER_TAB_COMMENTS / USER_COL_COMMENTS](#user_tab_comments--user_col_comments)
+  - [USER/DBA/ALL\_OBJECTS View](#userdbaall_objects-view)
+  - [USER/DBA/ALL\_TABLES View](#userdbaall_tables-view)
+  - [USER\_TAB\_COLUMNS View](#user_tab_columns-view)
+  - [USER\_CONSTRAINTS Data Dictionary View](#user_constraints-data-dictionary-view)
+  - [USER\_TAB\_COMMENTS / USER\_COL\_COMMENTS](#user_tab_comments--user_col_comments)
 - [15. Oracle Sequences](#15-oracle-sequences)
   - [Creating Sequences](#creating-sequences)
   - [Modifying Sequences](#modifying-sequences)
@@ -109,27 +109,27 @@
   - [Using Sequences](#using-sequences)
   - [Using Sequences as Default Values](#using-sequences-as-default-values)
   - [Sequence Caching](#sequence-caching)
-  - [USER_SEQUENCES View](#user_sequences-view)
+  - [USER\_SEQUENCES View](#user_sequences-view)
   - [The DROP IDENTITY clause removes the identity property but keeps the column](#the-drop-identity-clause-removes-the-identity-property-but-keeps-the-column)
   - [START WITH LIMIT VALUE sets the existing maximum/minimum value + INCREMENT](#start-with-limit-value-sets-the-existing-maximumminimum-value--increment)
 - [16. Oracle Synonyms](#16-oracle-synonyms)
   - [Creating, Using and Dropping Synonyms](#creating-using-and-dropping-synonyms)
-  - [Analyzing the USER_SYNONYMS View](#analyzing-the-user_synonyms-view)
+  - [Analyzing the USER\_SYNONYMS View](#analyzing-the-user_synonyms-view)
 - [17.Oracle Indexes in SQL](#17oracle-indexes-in-sql)
   - [The default index type is `Non-Unique B-tree Index`](#the-default-index-type-is-non-unique-b-tree-index)
   - [Unique indexes prevent duplicate value entry](#unique-indexes-prevent-duplicate-value-entry)
   - [By using the ALTER TABLE statement](#by-using-the-alter-table-statement)
   - [Remove (Drop) Indexes](#remove-drop-indexes)
   - [Function-Based Indexes](#function-based-indexes)
-  - [Analyzing the UESER\*INDEXES and USER_IND_COLUMNS Views](#analyzing-the-ueserindexes-and-user_ind_columns-views)
+  - [Analyzing the UESER\_INDEXES and USER\_IND\_COLUMNS Views](#analyzing-the-ueser_indexes-and-user_ind_columns-views)
   - [Altering Indexes](#altering-indexes)
 - [18. Managing Oracle Privileges and Roles](#18-managing-oracle-privileges-and-roles)
   - [Creating a Database User](#creating-a-database-user)
 - [19. Using OVER and PARTITION with ORDER BY](#19-using-over-and-partition-with-order-by)
   - [OVER PARTITION](#over-partition)
   - [OVER ORDER BY](#over-order-by)
-  - [Rank, Dense_rank](#rank-dense_rank)
-  - [Lead, Lag](#lead-lag)
+  - [Row\_number, Rank, Dense\_rank](#row_number-rank-dense_rank)
+  - [Lead and Lag](#lead-and-lag)
 - [Notes](#notes)
 
 <br/>
@@ -1461,7 +1461,7 @@ UPDATE empvw80 SET department_id = 70 WHERE employee_id = 217; -- violated WHERE
 
 #### Using WITH READ ONLY Clause
 
-can only use either WITH CHECK OPTION Clause OR WITH READ ONLY Clause
+Can only use either WITH CHECK OPTION Clause OR WITH READ ONLY Clause
 
 #### Dropping View
 
@@ -1475,11 +1475,9 @@ Dropping a view means deleting its definition from the database
 
 ---
 
-1. A data dictionary is a set of read-only tables that provides administrative
-   metadata about the database and database objects.
+1. A data dictionary is a set of read-only tables that provides administrative metadata about the database and database objects.
 
-1. Data dictionary views are a collection of tables and views that contain
-   information about the database.
+1. Data dictionary views are a collection of tables and views that contain information about the database.
 
 #### Dictionary View
 
@@ -1587,7 +1585,9 @@ Can be used
 - In the SELECT list of a subquery in an INSERT statement
 - In the VALUES part of an INSERT statement
 - In the SET clause of an UPDATE statement
-  Can not be used
+
+Can not be used
+
 - With the DISTINCT keyword
 - In the GROUP BY clause
 - In the HAVING clause
@@ -1613,21 +1613,20 @@ CREATE TABLE temp
 - Cache size can be defined when the sequence is initially created or altered (Default: 20)
 - The specified number of sequence values is cached into memory on the first call
 - Sequence values are retrieved from the cache on request
-- After the last cached sequence value in memory is used, the next set of sequence
-  values is cached
+- After the last cached sequence value in memory is used, the next set of sequence values is cached
 
 #### USER_SEQUENCES View
 
 `IDENTITY` Column
 
 - Restrictions
-  - A table can have only one identity column
+  - A table can have **only one** identity column
   - Identity columns must be `numeric data types`
   - Identity column is not inherited when using a CTS statement
   - Identity column cannot have another DEFAULT value
   - Identity columns implicitly have `NOT NULL` and `NOT DEFERRABLE` constraints
   - USER_TAB_IDENTITY_COLS to query all the identity columns
-  - the SYS.IDENSEQ$ view stores the link between the table and
+  - The SYS.IDENSEQ$ view stores the link between the table
 
 ```sql
 GENERATED [ ALWAYS | BY DEFAULT [ ON NULL ]] AS IDENTITY [(identity options)]
@@ -1750,7 +1749,9 @@ CREATE TABLE sales (
 
 #### Remove (Drop) Indexes
 
-`DROP INDEX index_name [ONLINE];` -- indexes cannot be modified
+`DROP INDEX index_name [ONLINE];`
+
+- indexes cannot be modified
 
 #### Function-Based Indexes
 
@@ -1778,10 +1779,10 @@ ALTER INDEX emp_cpy_dpt_id_idx INVISIBLE;
 ALTER SESSION SET optimizer_use_invisible_indexes = TRUE;
 ```
 
-#### Analyzing the UESER\*INDEXES and USER_IND_COLUMNS Views
+#### Analyzing the UESER_INDEXES and USER_IND_COLUMNS Views
 
 ```sql
-SELECT * FROM user*indexes;
+SELECT * FROM user_indexes;
 SELECT * FROM user_ind_columns;
 ```
 
@@ -1831,8 +1832,7 @@ SELECT * FROM user_role_privs;
 
 #### OVER PARTITION
 
-Works as window function
-`aggregate_function OVER(PARTITION by col_name)`
+Works as window function `aggregate_function OVER(PARTITION by col_name)`
 
 ```sql
 select sum(weight) over(partition by color) sum_by_shape
@@ -1842,19 +1842,18 @@ select sum(weight) over(partition by color) sum_by_shape
 
 #### OVER ORDER BY
 
-The `order by` clause enables you to compute running totals.
-`aggregate_function OVER(ORDER BY col_name)`
+The `order by` clause enables you to compute running totals. `aggregate_function OVER(ORDER BY col_name)`
 
 ```sql
 select sum(weight) over(partition by color order by id) running_weight_by_color
   from brick
 ```
 
-#### Rank, Dense_rank
+#### Row_number, Rank, Dense_rank
 
+- Row_number - each row has a new value
 - Rank - Rows with the same value in the order by have the same rank.
 - Dense_rank - Rows with the same value in the order by have the same rank, but there are no gaps in the ranks
-- Row_number - each row has a new value
 
 ```sql
 select id, weight
@@ -1873,7 +1872,7 @@ from bricks;
 | 2   | 2      | 5   | 4   | 2   |
 | 5   | 3      | 6   | 6   | 3   |
 
-#### Lead, Lag
+#### Lead and Lag
 
 `Lead` and `Lag` to get values from rows backwards and forwards
 

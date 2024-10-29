@@ -635,3 +635,173 @@ begin
 
 end;
 ```
+
+- Bind Variables and Parsing
+  - Soft Parse
+
+```sql
+create or replace procedure fetch_sales_dynamic (s_orderID number, s_cust_ID number)
+as
+sale_rec sales%rowtype;
+SQL_stmt varchar2(500) := 'SELECT SALES_DATE, ORDER_ID FROM SALES WHERE 1 = 1';
+begin
+    if s_orderID is not null then
+        SQL_stmt := SQL_stmt || 'AND ORDER_ID = :var1';
+    end if
+
+    if s_orderID is not null then
+
+        -- execute statement and insert into record type
+        execute immediate SQL_stmt into sale_rec using s_orderID;
+    end if;
+
+    dbms_output.put_line(sale_rec.sales_date);
+
+end;
+```
+
+- Dynamic SQL with Cursors
+
+```sql
+create or replace procedure fetch_sales_dynamic (s_orderID number, s_cust_ID number)
+as
+
+type sales_cur is ref cursor; -- declare cursor
+s_cursor sales_cur; -- assign cursor
+
+sale_rec sales%rowtype;
+SQL_stmt varchar2(500) := 'SELECT SALES_DATE, ORDER_ID FROM SALES WHERE 1 = 1';
+
+begin
+    if s_orderID is not null then
+        SQL_stmt := SQL_stmt || 'AND ORDER_ID = :var1';
+    end if
+
+    if s_orderID is not null then
+        -- open cursor depends on dynamic values
+        open s_cursor for SQL_stmt using s_orderID;
+    end if;
+
+    loop
+        fetch s_cursor into sale_rec;
+        exit when s_cursor%notfound;
+        dbms_output.put_line(sale_rec.sales_date);
+    end loop;
+
+    close s_cursor;
+end;
+
+```
+
+### DBMS_SQL
+
+- using the built in package DBMS_SQL
+
+```sql
+create or replace procedure delete_customer(customer_id in number) as
+    cursor_name integer;
+    rows_processed integer;
+begin
+    -- open the Cursor
+    cursor_name := dbms_sql.open_cursor;
+
+    -- Parsing the SQL statement
+    dbms_sql.parse(cursor_name, 'delete from customer where customer_id = :var1', dbms_sql.native);
+
+    -- Binding the variables
+    dbms_sql.bind_variable(cursor_name, ':var1', customer_id);
+
+    -- Executing the cursor
+    rows_processed := dbms_sql.execute(cursor_name);
+
+    -- Closing the cursor
+    dbms_sql.close_cursor(cursor_name);
+
+    exception
+        when others then
+            dbms_sql.close_cursor(cursor_name);
+end;
+
+```
+
+### Table Functions
+
+```sql
+create or replace function fetch_sales_table(s_orderID number)
+    return sales_table
+    is
+        l_tab sales_table := sales_table();
+begin
+    for c in (select sales_date, order_id from sales where order_id = S_orderID) loop
+        l_tab.extend;
+        l_tab(l_tab.last) := sales_row(c.sales_date, c.order_id);
+    end loop;
+
+    return l_tab;
+end;
+
+select * from table(fetch_sales_table(123));
+
+```
+
+### Pipelined Table Functions
+
+```sql
+create or replace function fetch_sales_table(s_orderID number)
+    return sales_table
+    Pipelined
+    is
+begin
+    for c in (select sales_date, order_id from sales where order_id = S_orderID) loop
+        pipe row(sales_row(c.sales_date, c.order_Id));
+    end loop;
+
+end;
+
+select * from table(fetch_sales_table(123));
+
+```
+
+#### Large Objects(LOB's)
+
+- internal LOB's
+  - CLOB: a character LOB, used to store single-byte character data.
+    - with querying larger LOBs, use the DBMS_LOB package functions
+  - BLOB: a binary LOB, used to store binary, raw data.
+
+```sql
+create directory myimages as 'C:\MYIMAGES';
+
+declare
+    src bfile := bfilename('MYIMAGES', 'Amarnath.jpg');
+    dest BLOB;
+begin
+    insert into job_resumes values(1,'John','M', empty_blob())
+        returning profile_picture into dest; -- return column pointer
+
+    dbms_lob.open(src, dbms_lob.lob_readonly);
+    dbms_lob.LoadFromFile(dest, src, dbms_lob.getlength(src));
+    dbms_lob.close(src);
+
+    commit;
+end;
+/
+```
+
+- NCLOB: a LOB used to store multi-byte character data.
+
+- external LOB's
+  - stored ouside of the database as operating system files
+  - only a reference to the actual OS file is stored in the database
+  - external LOBs do not participate in transactions
+  - BFILE: binary file holds references to large binary data stored as physical files in the OS outside the database
+
+```sql
+create table job_resumes
+(
+    resume_id number,
+    profile_picture bfile,
+
+    insert into job_resumes values (3, bfilename('myimages','profile.jpg'));
+)
+```
